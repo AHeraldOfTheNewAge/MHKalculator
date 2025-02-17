@@ -5,6 +5,7 @@ const urlsToCache = [
 	"/style3.css",
 	"/script.js",
 	"/favicon.ico",
+	"/Tone.js",
 	"/icons/icon-192.png",
 	"/icons/icon-512.png",
 	"/icons/icon-192-maskable.png",
