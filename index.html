@@ -10,45 +10,46 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="style3.css">
+		<link rel="manifest" href="/manifest.json">
 		<!-- https://autotel.co/posts/2016-05-06-sample-slicing-in-tone-js -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</head>
 
 	<body>
-			<label>MKCalculator V0.4</label>
-			<textarea id="screen"></textarea>
-			<div id="buttons">
-				<button>!</button>
-				<button>@</button>
-				<button>%</button>
-				<button>*</button>
-				<button>/</button>
+		<label>MKCalculator V0.4</label>
+		<textarea id="screen"></textarea>
+		<div id="buttons">
+			<button>!</button>
+			<button>@</button>
+			<button>%</button>
+			<button>*</button>
+			<button>/</button>
 
-				<button id='s0'>0</button>
-				<button id='s1'>1</button>
-				<button id='s2'>2</button>
-				<button id='s3'>3</button>
-				<button id=''>-</button>
+			<button id='s0'>0</button>
+			<button id='s1'>1</button>
+			<button id='s2'>2</button>
+			<button id='s3'>3</button>
+			<button id=''>-</button>
 
-				<button id='s4'>4</button>
-				<button id='s5'>5</button>
-				<button id='s6'>6</button>
-				<button id='s7'>7</button>
-				<button>+</button>
+			<button id='s4'>4</button>
+			<button id='s5'>5</button>
+			<button id='s6'>6</button>
+			<button id='s7'>7</button>
+			<button>+</button>
 
-				<button id='s8'>8</button>
-				<button id='s9'>9</button>
-				<button id='s10'>A</button>
-				<button id='s11'>B</button>
+			<button id='s8'>8</button>
+			<button id='s9'>9</button>
+			<button id='s10'>A</button>
+			<button id='s11'>B</button>
 
 
-				<button id='s12'>C</button>
-				<button id='s13'>D</button>
-				<button id='s14'>E</button>
-				<button id='s15'>F</button>
-				<button id='equal'>=</button>
-			</div>
+			<button id='s12'>C</button>
+			<button id='s13'>D</button>
+			<button id='s14'>E</button>
+			<button id='s15'>F</button>
+			<button id='equal'>=</button>
+		</div>
 
 		<!-- Samples need to be somewhere loaded! -->
 		<input type="file" id="fs0" accept="audio/*" style="display: none;">
@@ -63,6 +64,15 @@
 		<input type="file" id="fs9" accept="audio/*" style="display: none;">
 		<input type="file" id="fs10" accept="audio/*" style="display: none;">
 		<input type="file" id="fs11" accept="audio/*" style="display: none;">
+
+		<script>
+			if ("serviceWorker" in navigator) {
+				navigator.serviceWorker
+					.register("/service-worker.js")
+					.then(() => console.log("Service Worker Registered"))
+					.catch((err) => console.log("Service Worker Registration Failed:", err));
+			}
+		</script>
 	</body>
 
 </html>
