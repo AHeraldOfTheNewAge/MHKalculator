@@ -1,11 +1,11 @@
 const CACHE_NAME = "pwa-cache-v1";
 const urlsToCache = [
 	"/",
-	"/index.html",
+	"index.html",
 	"/style3.css",
 	"/script.js",
 	"/favicon.ico",
-	"/Tone.js",
+	"Tone.js",
 	"/icons/icon-192.png",
 	"/icons/icon-512.png",
 	"/icons/icon-192-maskable.png",
