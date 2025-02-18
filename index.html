@@ -69,6 +69,8 @@
 		<script>
 			$(function() {
 				if ("serviceWorker" in navigator) {
+					alert('go');
+
 					navigator.serviceWorker
 						.register("service-worker.js")
 						.then(() => alert("Service Worker Registered test 3?"))

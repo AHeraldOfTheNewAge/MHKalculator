@@ -1,6 +1,7 @@
 const CACHE_NAME = "pwa-cache-v1";
 const urlsToCache = [
 	"/MHKalculator/",
+	"manifest.json",
 	"index.html",
 	"style3.css",
 	"script.js",
