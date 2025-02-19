@@ -21,23 +21,23 @@
 		<label>MKCalculator V0.4</label>
 		<textarea id="screen"></textarea>
 		<div id="buttons">
-			<button>!</button>
-			<button>@</button>
-			<button>%</button>
-			<button>*</button>
-			<button>/</button>
+			<button id="sampleMode">∆</button>
+			<button id="sampleEffects">√s</button>
+			<button id="masterEffects">√M</button>
+			<button id="idontknowyetmaybesequence">*</button>
+			<button id="chop">/</button>
 
 			<button id='s0'>0</button>
 			<button id='s1'>1</button>
 			<button id='s2'>2</button>
 			<button id='s3'>3</button>
-			<button id=''>-</button>
+			<button id='minus'>-</button>
 
 			<button id='s4'>4</button>
 			<button id='s5'>5</button>
 			<button id='s6'>6</button>
 			<button id='s7'>7</button>
-			<button>+</button>
+			<button id="plus">+</button>
 
 			<button id='s8'>8</button>
 			<button id='s9'>9</button>
@@ -65,12 +65,14 @@
 		<input type="file" id="fs9" accept="audio/*" style="display: none;">
 		<input type="file" id="fs10" accept="audio/*" style="display: none;">
 		<input type="file" id="fs11" accept="audio/*" style="display: none;">
+		<input type="file" id="fs12" accept="audio/*" style="display: none;">
+		<input type="file" id="fs13" accept="audio/*" style="display: none;">
+		<input type="file" id="fs14" accept="audio/*" style="display: none;">
+		<input type="file" id="fs15" accept="audio/*" style="display: none;">
 
 		<script>
 			$(function() {
 				if ("serviceWorker" in navigator) {
-					alert('go');
-
 					navigator.serviceWorker
 						.register("service-worker.js")
 						.then(() => alert("Service Worker Registered test 3?"))

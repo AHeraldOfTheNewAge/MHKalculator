@@ -1,65 +1,94 @@
 var sampleSlots = [];
 
 function getSampleButtonId(target) {
-  return target.id.replace('s','').replace('f', '');
+  return target.id.replace('s', '').replace('f', '');
 };
 
-$(function() {
-  for (var i = 0; i <= 15; i++) { // Create 12 players for each sample button!
-    sampleSlots[i] = new Tone.Player().toDestination(); // Create a Tone.Player instance
-  }
+function initSampleButton(slotId) {
+  sampleSlots[slotId] = {
+    player: new Tone.Player().toDestination(), // Create a Tone.Player instance
+    mode: 'EMPTY', // There is no sample yet on this button! //TODO MODES -> EMPTY, LOADING, STOP, NORMAL, GATE, LOOP
+  };
 
-  for (var i = 0; i <= 15; i++) { // Sample buttons! //TODO COMMENT FURTHEr
-    $(`#s${i}`).on('click', async (evt) => {
-      var buttonId = getSampleButtonId(evt.target);
+  $(`#s${slotId}`).off(); // Clear all events!
 
-      if(!$(evt.target).hasClass('sampleLoaded')) { // No sample loaded yet, load it manually!
-        $(`#fs${buttonId}`).click(); // Load the sample!
+  $(`#s${slotId}`).on('click', async (evt) => {
+    var slotId = getSampleButtonId(evt.target);
+    var sampleSlot = sampleSlots[slotId];
+
+    // console.log(sampleSlot.mode, 'CE MODE E');
+
+    if (sampleSlot.mode == 'LOADING') { // Still loading, wait some more!
+      return;
+    }
+
+    if (sampleSlot.mode == 'STOP') {
+      // The sample was allready loaded!
+      await Tone.start(); // Ensure Tone.js context is started
+
+      if (sampleSlot.player.buffer) {
+        sampleSlot.player.start();
+
+        $('#screen').val(`Rulare: ${slotId}`);
+
+        sampleSlot.mode = 'NORMAL';
 
         return;
       }
 
-      // The sample was allready loaded!
-      await Tone.start(); // Ensure Tone.js context is started
+      alert('how did this happen?');
+      sampleSlot.mode = 'EMPTY';
 
-      if (sampleSlots[buttonId].buffer) {
-        sampleSlots[buttonId].start();
-
-        $('#screen').val(`Rulare: ${buttonId}`);
-      } else {
-        console.log("Load an audio file first!");
-      }
-    });
-
-      $(`#fs${i}`).on("change", function (evt) {
-        var file = evt.target.files[0]; // Get selected file
-
-        if (!file) { //?????????
-          return;
-        }
-
-        var reader = new FileReader();
-
-        reader.onload = async (e) => {
-            var buttonId = getSampleButtonId(evt.target);
-
-            console.log(buttonId);
-            var arrayBuffer = e.target.result; // Read file as ArrayBuffer
-            var audioBuffer = await Tone.context.decodeAudioData(arrayBuffer); // Decode it into an AudioBuffer
-            sampleSlots[buttonId].buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
-            $(`#s${buttonId}`).addClass('sampleLoaded');
-            $('#screen').val(`Sample incarcat pe slot: ${buttonId}`);
-        };
-
-        reader.readAsArrayBuffer(file); // Read file
-      });
+      return;
     }
 
+    if (sampleSlot.mode == 'NORMAL') {
+      sampleSlot.player.stop();
 
+      sampleSlot.mode = 'STOP';
 
+      return;
+    }
 
+    if (sampleSlot.mode == 'EMPTY') {
+      sampleSlot.mode = 'LOADING';
 
-  // document.getElementById("stopButton").addEventListener("click", () => {
-  //     player.stop();
-  // });
+      $(`#fs${slotId}`).click(); // Load the sample!
+
+      return;
+    }
+  });
+
+  $(`#fs${slotId}`).on("change", function(evt) { // In file we keep the samples!
+    var file = evt.target.files[0]; // Get selected file
+
+    if (!file) { //?????????
+      return;
+    }
+
+    var reader = new FileReader();
+
+    reader.onload = async (e) => {
+      var slotId = getSampleButtonId(evt.target);
+      var sampleSlot = sampleSlots[slotId];
+      var arrayBuffer = e.target.result; // Read file as ArrayBuffer
+      var audioBuffer = await Tone.context.decodeAudioData(arrayBuffer); // Decode it into an AudioBuffer
+
+      sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
+      sampleSlot.mode = 'STOP'; // Sample loaded but not playing basically
+      $('#screen').val(`Sample incarcat pe slot: ${slotId}`);
+    };
+
+    reader.readAsArrayBuffer(file); // Read file
+  });
+}
+
+function initAllSampleButtons() {
+  for (var i = 0; i <= 15; i++) { // Create 16 players for each sample button!
+    initSampleButton(i);
+  }
+}
+
+$(function() {
+  initAllSampleButtons();
 });
