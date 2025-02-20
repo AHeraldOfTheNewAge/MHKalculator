@@ -10,6 +10,13 @@ function initSampleButton(slotId) {
     mode: 'EMPTY', // There is no sample yet on this button! //TODO MODES -> EMPTY, LOADING, STOP, NORMAL, GATE, LOOP
   };
 
+
+  sampleSlots[slotId].player.onstop = (e) => { // onended not working
+    var sampleSlot = sampleSlots[slotId];
+
+    sampleSlot.mode = 'STOP';
+  };
+
   $(`#s${slotId}`).off(); // Clear all events!
 
   $(`#s${slotId}`).on('click', async (evt) => {
