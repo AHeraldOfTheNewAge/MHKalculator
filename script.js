@@ -94,6 +94,7 @@ function initSampleButton(slotId) {
 
       sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
       sampleSlot.mode = 'STOP'; // Sample loaded but not playing basically
+      $(`#s${slotId}`).addClass('sampleLoaded');
 
       pushToScreen(`Sample incarcat pe slot: ${slotId}`);
     };

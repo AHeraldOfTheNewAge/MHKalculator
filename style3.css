@@ -31,3 +31,7 @@ textarea {
   grid-column: 5/5;
   grid-row: 5/7;
 }
+
+#buttons button.sampleLoaded {
+  font-weight: bold;
+}
