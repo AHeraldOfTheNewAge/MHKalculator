@@ -1,5 +1,14 @@
 var sampleSlots = [];
 
+function pushToScreen(toAdd) {
+  var screen = $('#screen');
+
+  var currentScreenVal = screen.val();
+  screen.val(`${currentScreenVal}\n${toAdd}`);
+
+  screen.scrollTop(screen[0].scrollHeight); // Scroll
+}
+
 function getSampleButtonId(target) {
   return target.id.replace('s', '').replace('f', '');
 };
@@ -7,14 +16,16 @@ function getSampleButtonId(target) {
 function initSampleButton(slotId) {
   sampleSlots[slotId] = {
     player: new Tone.Player().toDestination(), // Create a Tone.Player instance
+    fileName: '????',
     mode: 'EMPTY', // There is no sample yet on this button! //TODO MODES -> EMPTY, LOADING, STOP, NORMAL, GATE, LOOP
   };
-
 
   sampleSlots[slotId].player.onstop = (e) => { // onended not working
     var sampleSlot = sampleSlots[slotId];
 
     sampleSlot.mode = 'STOP';
+
+    pushToScreen(`Stop rulare slot: ${slotId}`);
   };
 
   $(`#s${slotId}`).off(); // Clear all events!
@@ -36,7 +47,7 @@ function initSampleButton(slotId) {
       if (sampleSlot.player.buffer) {
         sampleSlot.player.start();
 
-        $('#screen').val(`Rulare: ${slotId}`);
+        pushToScreen(`Rulare slot: ${slotId}`);
 
         sampleSlot.mode = 'NORMAL';
 
@@ -83,7 +94,8 @@ function initSampleButton(slotId) {
 
       sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
       sampleSlot.mode = 'STOP'; // Sample loaded but not playing basically
-      $('#screen').val(`Sample incarcat pe slot: ${slotId}`);
+
+      pushToScreen(`Sample incarcat pe slot: ${slotId}`);
     };
 
     reader.readAsArrayBuffer(file); // Read file
@@ -98,4 +110,14 @@ function initAllSampleButtons() {
 
 $(function() {
   initAllSampleButtons();
+
+  $('#help').on('click', () => {
+    pushToScreen('Tutorial?');
+  });
+
+  ['idontknowyetmaysmthelse1', 'idontknowyetmaysmthelse2', 'idontknowyetmaysmthelse3', 'idontknowyetmaysmthelse4', 'sampleMode', 'sampleEffects', 'masterEffects', 'idontknowyetmaybesequence', 'chop', 'minus', 'plus', 'equal'].forEach(element => {
+    $(`#${element}`).on('click', () => {
+      pushToScreen('Not yet implemented..');
+    });
+  });
 });
