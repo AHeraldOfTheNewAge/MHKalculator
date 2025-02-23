@@ -28,17 +28,35 @@ function getSampleButtonId(target) {
   return target.id.replace('s', '').replace('f', '');
 };
 
-function markSampleLoaded(slotId) {
-  sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future
-    var sampleSlot = sampleSlots[slotId];
+function copySample(slotId, sourceSlot) { //TODO -> Comment!
+  if (!sourceSlot) {
+    sourceSlot = slotId;
+  }
 
-    sampleSlot.stop = true;
+  var sampleSlot = sampleSlots[slotId];
 
-    pushToScreen('Stop run slot: ' + decToHex(slotId));
+  sampleSlot.contentStatus = 'LOADING';
+
+  var file = $(`#fs${sourceSlot}`)[0].files[0]; // Get selected file
+
+  if (!file) { //?????????
+    return;
+  }
+
+  var reader = new FileReader();
+
+  reader.onload = async (e) => {
+    var arrayBuffer = e.target.result; // Read file as ArrayBuffer
+    var audioBuffer = await Tone.context.decodeAudioData(arrayBuffer); // Decode it into an AudioBuffer
+
+    sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
+    sampleSlot.contentStatus = 'LOADED';
+
+    $(`#s${slotId}`).addClass('sampleLoaded');
+    pushToScreen('Sample incarcat pe slot:' + decToHex(slotId));
   };
 
-  $(`#s${slotId}`).addClass('sampleLoaded');
-  pushToScreen('Sample incarcat pe slot:' + decToHex(slotId));
+  reader.readAsArrayBuffer(file); // Read file
 }
 
 function initSampleButton(slotId) {
@@ -48,6 +66,14 @@ function initSampleButton(slotId) {
     playMode: 'NORMAL', // Play mode can be: NORMAL, GATE, LOOP
     contentStatus: 'EMPTY', // status can be EMPTY, LOADING, LOADED
     stop: true, // Not playing true, playing false
+  };
+
+  sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future
+    var sampleSlot = sampleSlots[slotId];
+
+    sampleSlot.stop = true;
+
+    pushToScreen('Stop run slot: ' + decToHex(slotId));
   };
 
   $(`#s${slotId}`).off(); // Clear all events! //TODO ?? WHY?
@@ -98,13 +124,8 @@ function initSampleButton(slotId) {
 
     if (sampleSlot.contentStatus == 'LOADED') {
       if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
-        var copyOfSlot = $.extend(true, {}, sampleSlots[slotId]); // Avoid reference!
-
-        sampleSlots[mainModeAndParams.initiator] = copyOfSlot; //TODO -> ADD SOME STUFF THERE!
-
         pushToScreen('Copied sample from ' + decToHex(slotId) + ' to ' + decToHex(mainModeAndParams.initiator) + '!');
-
-        markSampleLoaded(mainModeAndParams.initiator);
+        copySample(mainModeAndParams.initiator, slotId);
 
         // Go back to normal!
         mainModeAndParams.mode = 'NORMAL';
@@ -143,29 +164,8 @@ function initSampleButton(slotId) {
 
   $(`#fs${slotId}`).on("change", function(evt) { // In file we keep the samples!
     var slotId = getSampleButtonId(evt.target);
-    var sampleSlot = sampleSlots[slotId];
 
-    sampleSlot.contentStatus = 'LOADING';
-
-    var file = evt.target.files[0]; // Get selected file
-
-    if (!file) { //?????????
-      return;
-    }
-
-    var reader = new FileReader();
-
-    reader.onload = async (e) => {
-      var arrayBuffer = e.target.result; // Read file as ArrayBuffer
-      var audioBuffer = await Tone.context.decodeAudioData(arrayBuffer); // Decode it into an AudioBuffer
-
-      sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
-      sampleSlot.contentStatus = 'LOADED';
-
-      markSampleLoaded(slotId);
-    };
-
-    reader.readAsArrayBuffer(file); // Read file
+    copySample(slotId);
   });
 }
 
