@@ -1,75 +1,141 @@
 var sampleSlots = [];
+var mainModeAndParams = { //TODO -> Comment
+  mode: 'NORMAL', // Modes can be NORMAL, LOADINGSAMPLE
+  initiator: undefined,
+  parameters: {},
+}
 
 function pushToScreen(toAdd) {
   var screen = $('#screen');
 
+  if (!toAdd) {
+    screen.val('');
+
+    return;
+  }
+
   var currentScreenVal = screen.val();
-  screen.val(`${currentScreenVal}\n${toAdd}`);
+  screen.val(`${currentScreenVal}\n- ${toAdd}`);
 
   screen.scrollTop(screen[0].scrollHeight); // Scroll
+}
+
+function decToHex(slotId) {
+  return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'][slotId];
 }
 
 function getSampleButtonId(target) {
   return target.id.replace('s', '').replace('f', '');
 };
 
+function markSampleLoaded(slotId) {
+  sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future
+    var sampleSlot = sampleSlots[slotId];
+
+    sampleSlot.stop = true;
+
+    pushToScreen('Stop run slot: ' + decToHex(slotId));
+  };
+
+  $(`#s${slotId}`).addClass('sampleLoaded');
+  pushToScreen('Sample incarcat pe slot:' + decToHex(slotId));
+}
+
 function initSampleButton(slotId) {
   sampleSlots[slotId] = {
     player: new Tone.Player().toDestination(), // Create a Tone.Player instance
     fileName: '????',
-    mode: 'EMPTY', // There is no sample yet on this button! //TODO MODES -> EMPTY, LOADING, STOP, NORMAL, GATE, LOOP
+    playMode: 'NORMAL', // Play mode can be: NORMAL, GATE, LOOP
+    contentStatus: 'EMPTY', // status can be EMPTY, LOADING, LOADED
+    stop: true, // Not playing true, playing false
   };
 
-  sampleSlots[slotId].player.onstop = (e) => { // onended not working
-    var sampleSlot = sampleSlots[slotId];
-
-    sampleSlot.mode = 'STOP';
-
-    pushToScreen(`Stop rulare slot: ${slotId}`);
-  };
-
-  $(`#s${slotId}`).off(); // Clear all events!
+  $(`#s${slotId}`).off(); // Clear all events! //TODO ?? WHY?
 
   $(`#s${slotId}`).on('click', async (evt) => {
     var slotId = getSampleButtonId(evt.target);
     var sampleSlot = sampleSlots[slotId];
 
-    // console.log(sampleSlot.mode, 'CE MODE E');
+    if (sampleSlot.contentStatus == 'EMPTY') {
+      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
+        if (slotId != mainModeAndParams.initiator) {
+          pushToScreen('Cannot copy slot ' + decToHex(slotId) + '  empty!');
 
-    if (sampleSlot.mode == 'LOADING') { // Still loading, wait some more!
+          return;
+        }
+
+        // Go back to normal!
+        mainModeAndParams.mode = 'NORMAL';
+        mainModeAndParams.initiator = undefined;
+
+        pushToScreen('load a new sample to slot: ' + decToHex(slotId));
+
+        $(`#fs${slotId}`).click(); // Load a new sample on this slot!
+
+        return;
+      }
+
+      // Mode NORMAL
+      mainModeAndParams.mode = 'LOADINGSAMPLE'; // Mark we are loading sample
+      mainModeAndParams.initiator = slotId;
+
+      pushToScreen("You can load a new sample on " + decToHex(slotId) + " by pressing the same button again or press another sample button to copy it's content!");
+
       return;
     }
 
-    if (sampleSlot.mode == 'STOP') {
-      // The sample was allready loaded!
+    if (sampleSlot.contentStatus == 'LOADING') { // Still loading, wait some more!
+      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
+        pushToScreen('Cannot copy slot ' + decToHex(slotId) + ' still loading!');
+
+        return;
+      }
+
+      pushToScreen('Sample ' + decToHex(slotId) + ' still loading!');
+
+      return;
+    }
+
+    if (sampleSlot.contentStatus == 'LOADED') {
+      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
+        var copyOfSlot = $.extend(true, {}, sampleSlots[slotId]); // Avoid reference!
+
+        sampleSlots[mainModeAndParams.initiator] = copyOfSlot; //TODO -> ADD SOME STUFF THERE!
+
+        pushToScreen('Copied sample from ' + decToHex(slotId) + ' to ' + decToHex(mainModeAndParams.initiator) + '!');
+
+        markSampleLoaded(mainModeAndParams.initiator);
+
+        // Go back to normal!
+        mainModeAndParams.mode = 'NORMAL';
+        mainModeAndParams.initiator = undefined;
+
+        return;
+      }
+
+      if (!sampleSlot.stop) { // Sample is playing, stop it!
+        sampleSlot.player.stop();
+
+        sampleSlot.stop = true;
+
+        return;
+      }
+
+      // Sample is not playing, try to play it!
       await Tone.start(); // Ensure Tone.js context is started
 
       if (sampleSlot.player.buffer) {
         sampleSlot.player.start();
 
-        pushToScreen(`Rulare slot: ${slotId}`);
+        pushToScreen('Play slot: ' + decToHex(slotId));
 
-        sampleSlot.mode = 'NORMAL';
+        sampleSlot.stop = false;
 
         return;
       }
 
       alert('how did this happen?');
-      sampleSlot.mode = 'EMPTY';
-
-      return;
-    }
-
-    if (sampleSlot.mode == 'NORMAL') {
-      sampleSlot.player.stop();
-
-      sampleSlot.mode = 'STOP';
-
-      return;
-    }
-
-    if (sampleSlot.mode == 'EMPTY') {
-      $(`#fs${slotId}`).click(); // Load the sample!
+      sampleSlot.contentStatus = 'EMPTY'; // Mark it as empty, so we can load something else, maybe it wont fail again!
 
       return;
     }
@@ -79,7 +145,7 @@ function initSampleButton(slotId) {
     var slotId = getSampleButtonId(evt.target);
     var sampleSlot = sampleSlots[slotId];
 
-    sampleSlot.mode = 'LOADING';
+    sampleSlot.contentStatus = 'LOADING';
 
     var file = evt.target.files[0]; // Get selected file
 
@@ -94,24 +160,22 @@ function initSampleButton(slotId) {
       var audioBuffer = await Tone.context.decodeAudioData(arrayBuffer); // Decode it into an AudioBuffer
 
       sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
-      sampleSlot.mode = 'STOP'; // Sample loaded but not playing basically
-      $(`#s${slotId}`).addClass('sampleLoaded');
+      sampleSlot.contentStatus = 'LOADED';
 
-      pushToScreen(`Sample incarcat pe slot: ${slotId}`);
+      markSampleLoaded(slotId);
     };
 
     reader.readAsArrayBuffer(file); // Read file
   });
 }
 
-function initAllSampleButtons() {
+$(function() {
+  pushToScreen(''); // Clear screen
+  pushToScreen('MHKCalculator operational..'); // Initial message
+
   for (var i = 0; i <= 15; i++) { // Create 16 players for each sample button!
     initSampleButton(i);
   }
-}
-
-$(function() {
-  initAllSampleButtons();
 
   $('#help').on('click', () => {
     pushToScreen('Tutorial?');
