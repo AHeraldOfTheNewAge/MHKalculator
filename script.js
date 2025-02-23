@@ -69,8 +69,6 @@ function initSampleButton(slotId) {
     }
 
     if (sampleSlot.mode == 'EMPTY') {
-      sampleSlot.mode = 'LOADING';
-
       $(`#fs${slotId}`).click(); // Load the sample!
 
       return;
@@ -78,6 +76,11 @@ function initSampleButton(slotId) {
   });
 
   $(`#fs${slotId}`).on("change", function(evt) { // In file we keep the samples!
+    var slotId = getSampleButtonId(evt.target);
+    var sampleSlot = sampleSlots[slotId];
+
+    sampleSlot.mode = 'LOADING';
+
     var file = evt.target.files[0]; // Get selected file
 
     if (!file) { //?????????
@@ -87,8 +90,6 @@ function initSampleButton(slotId) {
     var reader = new FileReader();
 
     reader.onload = async (e) => {
-      var slotId = getSampleButtonId(evt.target);
-      var sampleSlot = sampleSlots[slotId];
       var arrayBuffer = e.target.result; // Read file as ArrayBuffer
       var audioBuffer = await Tone.context.decodeAudioData(arrayBuffer); // Decode it into an AudioBuffer
 
