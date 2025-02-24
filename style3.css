@@ -36,3 +36,7 @@ textarea {
 #buttons button.sampleLoaded {
   font-weight: bold;
 }
+
+#buttons button.samplePlaying {
+  text-decoration: underline;
+}

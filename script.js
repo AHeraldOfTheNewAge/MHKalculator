@@ -72,6 +72,8 @@ function initSampleButton(slotId) {
   sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future
     var sampleSlot = sampleSlots[slotId];
 
+    $(`#s${slotId}`).removeClass('samplePlaying');
+
     sampleSlot.stop = true;
 
     pushToScreen('Stop: ' + decToHex(slotId));
@@ -148,6 +150,8 @@ function initSampleButton(slotId) {
 
       if (sampleSlot.player.buffer) {
         sampleSlot.player.start();
+
+        $(`#s${slotId}`).addClass('samplePlaying');
 
         pushToScreen(`Play ${sampleSlot.fileName} on slot: ` + decToHex(slotId));
 
