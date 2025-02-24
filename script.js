@@ -50,10 +50,11 @@ function copySample(slotId, sourceSlot) { //TODO -> Comment!
     var audioBuffer = await Tone.context.decodeAudioData(arrayBuffer); // Decode it into an AudioBuffer
 
     sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
+    sampleSlot.fileName = file.name;
     sampleSlot.contentStatus = 'LOADED';
 
     $(`#s${slotId}`).addClass('sampleLoaded');
-    pushToScreen('Sample incarcat pe slot:' + decToHex(slotId));
+    pushToScreen(`Sample ${sampleSlot.fileName} loaded on slot: ` + decToHex(slotId));
   };
 
   reader.readAsArrayBuffer(file); // Read file
@@ -73,7 +74,7 @@ function initSampleButton(slotId) {
 
     sampleSlot.stop = true;
 
-    pushToScreen('Stop run slot: ' + decToHex(slotId));
+    pushToScreen('Stop: ' + decToHex(slotId));
   };
 
   $(`#s${slotId}`).off(); // Clear all events! //TODO ?? WHY?
@@ -148,7 +149,7 @@ function initSampleButton(slotId) {
       if (sampleSlot.player.buffer) {
         sampleSlot.player.start();
 
-        pushToScreen('Play slot: ' + decToHex(slotId));
+        pushToScreen(`Play ${sampleSlot.fileName} on slot: ` + decToHex(slotId));
 
         sampleSlot.stop = false;
 
@@ -171,7 +172,7 @@ function initSampleButton(slotId) {
 
 $(function() {
   pushToScreen(''); // Clear screen
-  pushToScreen('MHKCalculator operational..'); // Initial message
+  pushToScreen('MHKalculator operational..'); // Initial message
 
   for (var i = 0; i <= 15; i++) { // Create 16 players for each sample button!
     initSampleButton(i);

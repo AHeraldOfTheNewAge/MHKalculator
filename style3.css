@@ -13,6 +13,7 @@ body {
 
 label {
   grid-area: label;
+  padding: 5px;
 }
 
 textarea {
