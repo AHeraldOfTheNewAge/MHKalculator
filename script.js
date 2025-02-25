@@ -1,6 +1,6 @@
 var sampleSlots = [];
 var mainModeAndParams = { //TODO -> Comment
-  mode: 'NORMAL', // Modes can be NORMAL, LOADINGSAMPLE
+  mode: 'PLAY', // Modes can be PLAY, LOADINGSAMPLE //TODO -> De schimbat default pe play
   initiator: undefined,
   parameters: {},
 }
@@ -79,94 +79,6 @@ function initSampleButton(slotId) {
     pushToScreen('Stop: ' + decToHex(slotId));
   };
 
-  $(`#s${slotId}`).off(); // Clear all events! //TODO ?? WHY?
-
-  $(`#s${slotId}`).on('click', async (evt) => {
-    var slotId = getSampleButtonId(evt.target);
-    var sampleSlot = sampleSlots[slotId];
-
-    if (sampleSlot.contentStatus == 'EMPTY') {
-      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
-        if (slotId != mainModeAndParams.initiator) {
-          pushToScreen('Cannot copy slot ' + decToHex(slotId) + '  empty!');
-
-          return;
-        }
-
-        // Go back to normal!
-        mainModeAndParams.mode = 'NORMAL';
-        mainModeAndParams.initiator = undefined;
-
-        pushToScreen('load a new sample to slot: ' + decToHex(slotId));
-
-        $(`#fs${slotId}`).click(); // Load a new sample on this slot!
-
-        return;
-      }
-
-      // Mode NORMAL
-      mainModeAndParams.mode = 'LOADINGSAMPLE'; // Mark we are loading sample
-      mainModeAndParams.initiator = slotId;
-
-      pushToScreen("You can load a new sample on " + decToHex(slotId) + " by pressing the same button again or press another sample button to copy it's content!");
-
-      return;
-    }
-
-    if (sampleSlot.contentStatus == 'LOADING') { // Still loading, wait some more!
-      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
-        pushToScreen('Cannot copy slot ' + decToHex(slotId) + ' still loading!');
-
-        return;
-      }
-
-      pushToScreen('Sample ' + decToHex(slotId) + ' still loading!');
-
-      return;
-    }
-
-    if (sampleSlot.contentStatus == 'LOADED') {
-      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
-        pushToScreen('Copied sample from ' + decToHex(slotId) + ' to ' + decToHex(mainModeAndParams.initiator) + '!');
-        copySample(mainModeAndParams.initiator, slotId);
-
-        // Go back to normal!
-        mainModeAndParams.mode = 'NORMAL';
-        mainModeAndParams.initiator = undefined;
-
-        return;
-      }
-
-      if (!sampleSlot.stop) { // Sample is playing, stop it!
-        sampleSlot.player.stop();
-
-        sampleSlot.stop = true;
-
-        return;
-      }
-
-      // Sample is not playing, try to play it!
-      await Tone.start(); // Ensure Tone.js context is started
-
-      if (sampleSlot.player.buffer) {
-        sampleSlot.player.start();
-
-        $(`#s${slotId}`).addClass('samplePlaying');
-
-        pushToScreen(`Play ${sampleSlot.fileName} on slot: ` + decToHex(slotId));
-
-        sampleSlot.stop = false;
-
-        return;
-      }
-
-      alert('how did this happen?');
-      sampleSlot.contentStatus = 'EMPTY'; // Mark it as empty, so we can load something else, maybe it wont fail again!
-
-      return;
-    }
-  });
-
   $(`#fs${slotId}`).on("change", function(evt) { // In file we keep the samples!
     var slotId = getSampleButtonId(evt.target);
 
@@ -182,7 +94,7 @@ $(function() {
     initSampleButton(i);
   }
 
-  $('button').on('click', (evt) => {
+  $('button').on('click', async (evt) => {
     // Independent buttons!
     if (evt.target.id == 'help') {
       pushToScreen('Tutorial?');
@@ -196,14 +108,91 @@ $(function() {
       return;
     }
 
-    if (mainModeAndParams.mode == 'NORMAL') {
+    var slotId = getSampleButtonId(evt.target);
+    var sampleSlot = sampleSlots[slotId];
 
-      return;
+    if (mainModeAndParams.mode == 'PLAY') {
+      if (sampleSlot.contentStatus == 'EMPTY') {
+        mainModeAndParams.mode = 'LOADINGSAMPLE'; // Mark we are loading sample
+        mainModeAndParams.initiator = slotId;
+
+        pushToScreen("You can load a new sample on " + decToHex(slotId) + " by pressing the same button again or press another sample button to copy it's content!");
+
+        return;
+      }
+
+      if (sampleSlot.contentStatus == 'LOADING') {
+        pushToScreen('Sample ' + decToHex(slotId) + ' still loading!');
+
+        return;
+      }
+
+      if (sampleSlot.contentStatus == 'LOADED') {
+        if (!sampleSlot.stop) { // Sample is playing, stop it!
+          sampleSlot.player.stop();
+
+          sampleSlot.stop = true;
+
+          return;
+        }
+
+        // Sample is not playing, try to play it!
+        await Tone.start(); // Ensure Tone.js context is started
+
+        if (sampleSlot.player.buffer) {
+          sampleSlot.player.start();
+
+          $(`#s${slotId}`).addClass('samplePlaying');
+
+          pushToScreen(`Play ${sampleSlot.fileName} on slot: ` + decToHex(slotId));
+
+          sampleSlot.stop = false;
+
+          return;
+        }
+
+        alert('how did this happen?');
+        sampleSlot.contentStatus = 'EMPTY'; // Mark it as empty, so we can load something else, maybe it wont fail again!
+
+        return;
+      }
     }
 
     if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
+      if (sampleSlot.contentStatus == 'EMPTY') {
+        if (slotId != mainModeAndParams.initiator) { // User must click on initiator to load new sample, cannot copy empty
+          pushToScreen('Cannot copy slot ' + decToHex(slotId) + '  empty!');
 
-      return;
+          return;
+        }
+
+        // Clicked on himself, load new, get back to PLAY
+        mainModeAndParams.mode = 'PLAY';
+        mainModeAndParams.initiator = undefined;
+
+        pushToScreen('load a new sample to slot: ' + decToHex(slotId));
+
+        $(`#fs${slotId}`).click(); // Load a new sample on this slot!
+
+        return;
+      }
+
+      if (sampleSlot.contentStatus == 'LOADING') {
+        pushToScreen('Cannot copy slot ' + decToHex(slotId) + ' still loading!');
+
+        return;
+      }
+
+      if (sampleSlot.contentStatus == 'LOADED') {
+        pushToScreen('Copied sample from ' + decToHex(slotId) + ' to ' + decToHex(mainModeAndParams.initiator) + '!');
+        copySample(mainModeAndParams.initiator, slotId);
+
+        // Go back to PLAY!
+        mainModeAndParams.mode = 'PLAY';
+        mainModeAndParams.initiator = undefined;
+
+        return;
+      }
     }
   });
 });
