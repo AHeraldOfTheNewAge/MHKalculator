@@ -182,13 +182,28 @@ $(function() {
     initSampleButton(i);
   }
 
-  $('#help').on('click', () => {
-    pushToScreen('Tutorial?');
-  });
+  $('button').on('click', (evt) => {
+    // Independent buttons!
+    if (evt.target.id == 'help') {
+      pushToScreen('Tutorial?');
 
-  ['idontknowyetmaysmthelse1', 'idontknowyetmaysmthelse2', 'idontknowyetmaysmthelse3', 'idontknowyetmaysmthelse4', 'sampleMode', 'sampleEffects', 'masterEffects', 'idontknowyetmaybesequence', 'chop', 'minus', 'plus', 'equal'].forEach(element => {
-    $(`#${element}`).on('click', () => {
+      return;
+    }
+
+    if (isNaN(parseInt(evt.target.id.replace('s', '')))) { // Buttons not yet implemented!
       pushToScreen('Not yet implemented..');
-    });
+
+      return;
+    }
+
+    if (mainModeAndParams.mode == 'NORMAL') {
+
+      return;
+    }
+
+    if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
+
+      return;
+    }
   });
 });
