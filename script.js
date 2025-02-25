@@ -29,8 +29,10 @@ function getSampleButtonId(target) {
 };
 
 function copySample(slotId, sourceSlot) { //TODO -> Comment!
-  if (!sourceSlot) {
+  if (!sourceSlot) { // The case when we load a new sample on current sample slot
     sourceSlot = slotId;
+  } else { // When we copy from another slot, we must copy from it's file source, this fixes the case when we copy from an allready copied slot
+    sourceSlot = sampleSlots[sourceSlot].fileSource;
   }
 
   var sampleSlot = sampleSlots[slotId];
@@ -52,6 +54,7 @@ function copySample(slotId, sourceSlot) { //TODO -> Comment!
     sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
     sampleSlot.fileName = file.name;
     sampleSlot.contentStatus = 'LOADED';
+    sampleSlot.fileSource = sourceSlot; // The file input where we uploaded the sample
 
     $(`#s${slotId}`).addClass('sampleLoaded');
     pushToScreen(`Sample ${sampleSlot.fileName} loaded on slot: ` + decToHex(slotId));
@@ -67,6 +70,7 @@ function initSampleButton(slotId) {
     playMode: 'NORMAL', // Play mode can be: NORMAL, GATE, LOOP
     contentStatus: 'EMPTY', // status can be EMPTY, LOADING, LOADED
     stop: true, // Not playing true, playing false
+    fileSource: undefined,// Marks the fileInput where we uploaded the sample
   };
 
   sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future
