@@ -132,8 +132,36 @@ $(function() {
 
         return;
       }
+    }
 
-      return;
+    if (evt.target.id == 'mute') {
+      if (mainModeAndParams.mode == 'PLAY') {
+        pushToScreen('Mute/Unmute a sample..');
+
+        mainModeAndParams.mode = 'MUTE';
+
+        return;
+      }
+
+      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
+        pushToScreen('Cannot mute when loading a new sample!');
+
+        return;
+      }
+
+      if (mainModeAndParams.mode == 'LINK') {
+        pushToScreen('Cannot mute when linking!');
+
+
+        return;
+      }
+
+      if (mainModeAndParams.mode == 'MUTE') {
+        pushToScreen('Cancelled muting');
+        resetToPlayMode();
+
+        return;
+      }
     }
 
     if (isNaN(parseInt(evt.target.id.replace('s', '')))) { // Buttons not yet implemented!
@@ -282,6 +310,33 @@ $(function() {
         resetToPlayMode();
 
         return;
+      }
+    }
+
+    if (mainModeAndParams.mode == 'MUTE') {
+      if (sampleSlot.contentStatus == 'EMPTY') {
+        pushToScreen('Cannot mute an empty slot!');
+
+        return;
+      }
+
+      if (sampleSlot.contentStatus == 'LOADING') {
+        pushToScreen('Cannot mute a loading slot!');
+
+        return;
+      }
+
+      if (sampleSlot.contentStatus == 'LOADED') {
+        if (sampleSlot.player.mute == true) {
+          sampleSlot.player.mute = false;
+
+          pushToScreen('Unmuted slot ' + decToHex(slotId));
+        } else {
+          sampleSlot.player.mute = true;
+          pushToScreen('Muted slot ' + decToHex(slotId));
+        }
+
+        resetToPlayMode();
       }
     }
   });
