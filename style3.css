@@ -26,6 +26,9 @@ textarea {
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   padding: 5px;
+}
+
+#buttons button {
   text-decoration-thickness: 3px;
 }
 
@@ -38,14 +41,14 @@ textarea {
   font-weight: bold;
 }
 
-#buttons button.samplePlaying:not(.sampleMute) {
+#buttons button.active:not(.sampleMute) {
   text-decoration: underline;
 }
 
-#buttons button.sampleMute:not(.samplePlaying) {
+#buttons button.sampleMute:not(.active) {
   text-decoration: line-through;
 }
 
-#buttons button.samplePlaying.sampleMute {
+#buttons button.active.sampleMute {
   text-decoration: underline line-through;
 }

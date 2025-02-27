@@ -81,7 +81,7 @@ function initSampleButton(slotId) {
   sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future
     var sampleSlot = sampleSlots[slotId];
 
-    $(`#s${slotId}`).removeClass('samplePlaying');
+    $(`#s${slotId}`).removeClass('active');
 
     sampleSlot.stop = true;
 
@@ -116,6 +116,7 @@ $(function() {
         pushToScreen('Link a sample with another, choose a source..');
 
         mainModeAndParams.mode = 'LINK';
+        $('#link').addClass('active');
 
         return;
       }
@@ -128,6 +129,8 @@ $(function() {
 
       if (mainModeAndParams.mode == 'LINK') {
         pushToScreen('Cancelled linking');
+        $('#link').removeClass('active');
+
         resetToPlayMode();
 
         return;
@@ -139,6 +142,8 @@ $(function() {
         pushToScreen('Mute/Unmute a sample..');
 
         mainModeAndParams.mode = 'MUTE';
+
+        $('#mute').addClass('active');
 
         return;
       }
@@ -152,12 +157,14 @@ $(function() {
       if (mainModeAndParams.mode == 'LINK') {
         pushToScreen('Cannot mute when linking!');
 
-
         return;
       }
 
       if (mainModeAndParams.mode == 'MUTE') {
         pushToScreen('Cancelled muting');
+
+        $('#mute').removeClass('active');
+
         resetToPlayMode();
 
         return;
@@ -196,8 +203,6 @@ $(function() {
           sampleSlot.stop = true;
 
           if (typeof sampleSlot.link != 'undefined') { // Trigger the link!
-            console.log($(`#s${sampleSlot.link}`));
-
             $(`#s${sampleSlot.link}`).click();
           }
 
@@ -210,7 +215,7 @@ $(function() {
         if (sampleSlot.player.buffer) {
           sampleSlot.player.start();
 
-          $(`#s${slotId}`).addClass('samplePlaying');
+          $(`#s${slotId}`).addClass('active');
 
           pushToScreen(`Play ${sampleSlot.fileName} on slot ` + decToHex(slotId));
 
@@ -291,6 +296,8 @@ $(function() {
           $(`#s${mainModeAndParams.initiator}`).text(decToHex(mainModeAndParams.initiator)); // Get back to original text
 
           pushToScreen('Unlinked slot ' + decToHex(mainModeAndParams.initiator));
+          $('#link').removeClass('active');
+
           resetToPlayMode();
 
           return;
@@ -307,6 +314,8 @@ $(function() {
         $(`#s${mainModeAndParams.initiator}`).text(decToHex(mainModeAndParams.initiator) + ' + ' + decToHex(slotId));
 
         pushToScreen('Slot ' + decToHex(mainModeAndParams.initiator) + ' is now linked to ' + decToHex(slotId));
+        $('#link').removeClass('active');
+
         resetToPlayMode();
 
         return;
