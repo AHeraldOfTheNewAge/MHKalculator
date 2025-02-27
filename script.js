@@ -331,12 +331,19 @@ $(function() {
           sampleSlot.player.mute = false;
 
           pushToScreen('Unmuted slot ' + decToHex(slotId));
-        } else {
-          sampleSlot.player.mute = true;
-          pushToScreen('Muted slot ' + decToHex(slotId));
+
+          $(`#s${slotId}`).removeClass('sampleMute');
+
+          return;
         }
 
-        resetToPlayMode();
+        sampleSlot.player.mute = true;
+
+        pushToScreen('Muted slot ' + decToHex(slotId));
+
+        $(`#s${slotId}`).addClass('sampleMute');
+
+        return;
       }
     }
   });

@@ -26,6 +26,7 @@ textarea {
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   padding: 5px;
+  text-decoration-thickness: 3px;
 }
 
 #buttons #equal {
@@ -37,6 +38,14 @@ textarea {
   font-weight: bold;
 }
 
-#buttons button.samplePlaying {
+#buttons button.samplePlaying:not(.sampleMute) {
   text-decoration: underline;
+}
+
+#buttons button.sampleMute:not(.samplePlaying) {
+  text-decoration: line-through;
+}
+
+#buttons button.samplePlaying.sampleMute {
+  text-decoration: underline line-through;
 }
