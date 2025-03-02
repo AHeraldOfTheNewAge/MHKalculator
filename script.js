@@ -221,7 +221,7 @@ $(function() {
 
           sampleSlot.stop = false;
 
-          if (typeof sampleSlot.link != 'undefined') { // Trigger the link!
+          if (typeof sampleSlot.link != 'undefined') { // Trigger the link! //TODO -> Use tone transport! Assure stuff plays at the same time!
             console.log($(`#s${sampleSlot.link}`));
 
             $(`#s${sampleSlot.link}`).click();
