@@ -95,6 +95,51 @@ function initSampleButton(slotId) {
   });
 }
 
+function playSample(slotId) {
+  var sampleSlot = sampleSlots[slotId];
+
+  // Sample is not playing, try to play it!
+  // if (sampleSlot.player.buffer) {} //TODO -> In the past if the buffer was not existent, we emptied the slot
+  sampleSlot.player.start();
+
+  $(`#s${slotId}`).addClass('active');
+
+  pushToScreen(`Play ${sampleSlot.fileName} on slot ` + decToHex(slotId));
+
+  sampleSlot.stop = false;
+
+  if (typeof sampleSlot.link == 'undefined') {
+    return;
+  }
+
+  toggleSample(sampleSlot.link); // Trigger the link! //TODO -> Use tone transport! Assure stuff plays at the same time!
+}
+
+function stopSample(slotId) {
+  var sampleSlot = sampleSlots[slotId];
+
+  sampleSlot.player.stop();
+
+  sampleSlot.stop = true;
+
+  if (typeof sampleSlot.link == 'undefined') {
+    return;
+  }
+
+  toggleSample(sampleSlot.link);
+}
+
+function toggleSample(slotId) {
+  var sampleSlot = sampleSlots[slotId];
+
+  if (!sampleSlot.stop) { // Sample is playing, stop it!
+    stopSample(slotId);
+    return;
+  }
+
+  playSample(slotId);
+}
+
 $(function() {
   pushToScreen(''); // Clear screen
   pushToScreen('MHKalculator operational..'); // Initial message
@@ -198,13 +243,7 @@ $(function() {
 
       if (sampleSlot.contentStatus == 'LOADED') {
         if (!sampleSlot.stop) { // Sample is playing, stop it!
-          sampleSlot.player.stop();
-
-          sampleSlot.stop = true;
-
-          if (typeof sampleSlot.link != 'undefined') { // Trigger the link!
-            $(`#s${sampleSlot.link}`).click();
-          }
+          stopSample(slotId);
 
           return;
         }
@@ -212,26 +251,7 @@ $(function() {
         // Sample is not playing, try to play it!
         await Tone.start(); // Ensure Tone.js context is started
 
-        if (sampleSlot.player.buffer) {
-          sampleSlot.player.start();
-
-          $(`#s${slotId}`).addClass('active');
-
-          pushToScreen(`Play ${sampleSlot.fileName} on slot ` + decToHex(slotId));
-
-          sampleSlot.stop = false;
-
-          if (typeof sampleSlot.link != 'undefined') { // Trigger the link! //TODO -> Use tone transport! Assure stuff plays at the same time!
-            console.log($(`#s${sampleSlot.link}`));
-
-            $(`#s${sampleSlot.link}`).click();
-          }
-
-          return;
-        }
-
-        alert('how did this happen?');
-        sampleSlot.contentStatus = 'EMPTY'; // Mark it as empty, so we can load something else, maybe it wont fail again!
+        playSample(slotId);
 
         return;
       }
