@@ -257,10 +257,12 @@ $(function() {
           return;
         }
 
-        resetToPlayMode(); // Clicked on himself, load new, get back to PLAY
+
         pushToScreen('load a new sample to slot ' + decToHex(slotId));
 
         $(`#fs${slotId}`).click(); // Load a new sample on this slot!
+
+        resetToPlayMode(); // Clicked on himself, load new, get back to PLAY
 
         return;
       }
