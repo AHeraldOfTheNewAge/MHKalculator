@@ -74,16 +74,11 @@ function initSampleButton(slotId) {
     playMode: 'NORMAL', // Play mode can be: NORMAL, GATE, LOOP
     link: undefined, // If linked, playing this sample will trigger the linked sample as well
     contentStatus: 'EMPTY', // status can be EMPTY, LOADING, LOADED
-    stop: true, // Not playing true, playing false
     fileSource: undefined,// Marks the fileInput where we uploaded the sample
   };
 
-  sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future
-    var sampleSlot = sampleSlots[slotId];
-
+  sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future?
     $(`#s${slotId}`).removeClass('active');
-
-    sampleSlot.stop = true;
 
     pushToScreen('Stop ' + decToHex(slotId));
   };
@@ -106,8 +101,6 @@ function playSample(slotId) {
 
   pushToScreen(`Play ${sampleSlot.fileName} on slot ` + decToHex(slotId));
 
-  sampleSlot.stop = false;
-
   if (typeof sampleSlot.link == 'undefined') {
     return;
   }
@@ -120,8 +113,6 @@ function stopSample(slotId) {
 
   sampleSlot.player.stop();
 
-  sampleSlot.stop = true;
-
   if (typeof sampleSlot.link == 'undefined') {
     return;
   }
@@ -132,8 +123,9 @@ function stopSample(slotId) {
 function toggleSample(slotId) {
   var sampleSlot = sampleSlots[slotId];
 
-  if (!sampleSlot.stop) { // Sample is playing, stop it!
+  if (sampleSlot.player.state == 'started') { // Sample is playing, stop it!
     stopSample(slotId);
+
     return;
   }
 
@@ -242,7 +234,7 @@ $(function() {
       }
 
       if (sampleSlot.contentStatus == 'LOADED') {
-        if (!sampleSlot.stop) { // Sample is playing, stop it!
+        if (sampleSlot.player.state == 'started') { // Sample is playing, stop it!
           stopSample(slotId);
 
           return;
