@@ -23,6 +23,23 @@ function decToHex(slotId) {
   return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'][slotId];
 }
 
+function enableAllButtons() { // Enable all the buttons!
+  $('button').removeAttr('disabled');
+}
+
+function disableButtonsBySituation(sourceButton) {
+  $('button').attr('disabled', true); // Disable everything!
+  $(`#${sourceButton}`).removeAttr('disabled'); // Enable the source button
+
+  sampleSlots.forEach((sampleSlot, slotId) => { // Enable all buttons with a sample loaded on them!
+    if (!sampleSlot.player.loaded) { // No sample loaded on this slot, skip!
+      return;
+    }
+
+    $(`#s${slotId}`).removeAttr('disabled'); // Enable this sample slot, it has a sample on it!
+  });
+}
+
 function getSampleButtonId(target) {
   return target.id.replace('s', '').replace('f', '');
 };
@@ -140,6 +157,8 @@ $(function() {
     initSampleButton(i);
   }
 
+  //TODO -> Use buffer instead of contentStatus(player.loaded)
+  //TODO -> Use loop key on player, to loop!
   $('button').on('click', async (evt) => {
     // Independent buttons!
     if (evt.target.id == 'help') {
