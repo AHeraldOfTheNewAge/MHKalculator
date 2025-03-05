@@ -1,6 +1,6 @@
 var sampleSlots = [];
 var mainModeAndParams = { //TODO -> Comment
-  mode: 'PLAY', // Modes can be PLAY, LOADINGSAMPLE //TODO -> De schimbat default pe play
+  mode: 'PLAY', // Modes can be PLAY, LOADINGSAMPLE, etc..
   initiator: undefined,
 }
 
@@ -27,9 +27,13 @@ function enableAllButtons() { // Enable all the buttons!
   $('button').removeAttr('disabled');
 }
 
-function disableButtonsBySituation(sourceButton, situation) {
-  $('button').attr('disabled', true); // Disable everything!
-  $(`#${sourceButton}`).removeAttr('disabled'); // Enable the source button
+function disableButtonsBySituation(buttonId, situation) {
+  if (parseInt(buttonId) == buttonId) {
+    buttonId = 's' + buttonId;
+  }
+
+  $('button:not("#help")').attr('disabled', true); // Disable everything!
+  $(`#${buttonId}`).removeAttr('disabled'); // Enable the source button
 
   sampleSlots.forEach((sampleSlot, slotId) => { // Enable all buttons with a sample loaded on them!
     if (!sampleSlot.player.loaded) { // No sample loaded on this slot, skip!
@@ -44,7 +48,7 @@ function getSampleButtonId(target) {
   return target.id.replace('s', '').replace('f', '');
 };
 
-function copySample(slotId, sourceSlot) { //TODO -> Comment!
+function copySample(slotId, sourceSlot) {
   if (!sourceSlot) { // The case when we load a new sample on current sample slot
     sourceSlot = slotId;
   } else { // When we copy from another slot, we must copy from it's file source, this fixes the case when we copy from an allready copied slot
@@ -80,6 +84,8 @@ function copySample(slotId, sourceSlot) { //TODO -> Comment!
 function resetToPlayMode() {
   mainModeAndParams.mode = 'PLAY';
   mainModeAndParams.initiator = undefined;
+
+  enableAllButtons(); //TODO -> MAYBE THIS FUNCTION WILL BE A PART OF THIS
 }
 
 function initSampleButton(slotId) {
@@ -156,7 +162,6 @@ $(function() {
 
   //TODO -> Use loop key on player, to loop!
   $('button').on('click', async (evt) => {
-    // Independent buttons!
     if (evt.target.id == 'help') {
       pushToScreen('Tutorial?');
 
@@ -170,23 +175,17 @@ $(function() {
         mainModeAndParams.mode = 'LINK';
         $('#link').addClass('active');
 
-        return;
-      }
-
-      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
-        pushToScreen('Cannot link when loading a new sample!');
+        disableButtonsBySituation('link');
 
         return;
       }
 
-      if (mainModeAndParams.mode == 'LINK') {
-        pushToScreen('Cancelled linking');
-        $('#link').removeClass('active');
+      pushToScreen('Cancelled linking');
+      $('#link').removeClass('active');
 
-        resetToPlayMode();
+      resetToPlayMode();
 
-        return;
-      }
+      return;
     }
 
     if (evt.target.id == 'mute') {
@@ -196,31 +195,18 @@ $(function() {
         mainModeAndParams.mode = 'MUTE';
 
         $('#mute').addClass('active');
+        disableButtonsBySituation('mute');
 
         return;
       }
 
-      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
-        pushToScreen('Cannot mute when loading a new sample!');
+      pushToScreen('Cancelled muting');
 
-        return;
-      }
+      $('#mute').removeClass('active');
 
-      if (mainModeAndParams.mode == 'LINK') {
-        pushToScreen('Cannot mute when linking!');
+      resetToPlayMode();
 
-        return;
-      }
-
-      if (mainModeAndParams.mode == 'MUTE') {
-        pushToScreen('Cancelled muting');
-
-        $('#mute').removeClass('active');
-
-        resetToPlayMode();
-
-        return;
-      }
+      return;
     }
 
     if (isNaN(parseInt(evt.target.id.replace('s', '')))) { // Buttons not yet implemented!
@@ -238,6 +224,7 @@ $(function() {
         mainModeAndParams.initiator = slotId;
 
         pushToScreen("You can load a new sample on " + decToHex(slotId) + " by pressing the same button again or press another sample button to copy it's content!");
+        disableButtonsBySituation(slotId);
 
         return;
       }
@@ -257,14 +244,8 @@ $(function() {
     }
 
     if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
-      if (!sampleSlot.player.loaded) { // Empty slot!
-        if (slotId != mainModeAndParams.initiator) { // User must click on initiator to load new sample, cannot copy empty
-          pushToScreen('Cannot copy slot ' + decToHex(slotId) + '  empty!');
-
-          return;
-        }
-
-        pushToScreen('load a new sample to slot ' + decToHex(slotId));
+      if (!sampleSlot.player.loaded) { // Empty slot! Means it clicked on the initiator
+        pushToScreen('Load a new sample to slot ' + decToHex(slotId));
 
         $(`#fs${slotId}`).click(); // Load a new sample on this slot!
 
@@ -281,13 +262,7 @@ $(function() {
     }
 
     if (mainModeAndParams.mode == 'LINK') {
-      if (!sampleSlot.player.loaded) { // Empty slot!
-        pushToScreen('Cannot use link on an empty slot!');
-
-        return;
-      }
-
-      if (!mainModeAndParams.initiator) {
+      if (!mainModeAndParams.initiator) { // Source of link
         mainModeAndParams.initiator = slotId;
 
         pushToScreen('Slot ' + decToHex(slotId) + ' will be link source! Choose a sample to trigger!');
@@ -295,7 +270,7 @@ $(function() {
         return;
       }
 
-      if (mainModeAndParams.initiator == slotId) { // If click again on initiator, remove link! //TODO -> Add cannot link to self! + improve what is here, use sampleSlot instead of smplslt
+      if (mainModeAndParams.initiator == slotId) { // If click again on initiator, remove link!
         sampleSlots[mainModeAndParams.initiator].link = undefined; // Marked as linked
 
         $(`#s${mainModeAndParams.initiator}`).text(decToHex(mainModeAndParams.initiator)); // Get back to original text
@@ -308,8 +283,9 @@ $(function() {
         return;
       }
 
-      if ((typeof sampleSlots[slotId].link != 'undefined') && sampleSlots[slotId].link == mainModeAndParams.initiator) { //TODO -> CANNTO LINK WITH A SAMPLE ALLREADY LINKED replace message
+      if ((typeof sampleSlots[slotId].link != 'undefined') && sampleSlots[slotId].link == mainModeAndParams.initiator) {
         pushToScreen('Cannot link backwards!!!!');
+        resetToPlayMode();
 
         return;
       }
