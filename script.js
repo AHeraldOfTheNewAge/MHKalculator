@@ -27,7 +27,7 @@ function enableAllButtons() { // Enable all the buttons!
   $('button').removeAttr('disabled');
 }
 
-function disableButtonsBySituation(buttonId, situation) {
+function disableButtonsBySituation(buttonId, situation) {// Add class active!?
   if (parseInt(buttonId) == buttonId) {
     buttonId = 's' + buttonId;
   }
@@ -69,8 +69,6 @@ function copySample(slotId, sourceSlot) {
     var audioBuffer = await Tone.context.decodeAudioData(arrayBuffer); // Decode it into an AudioBuffer
 
     sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
-    console.log(sampleSlot.player.loaded, 'ce ne daplayer loaded?');
-
     sampleSlot.fileName = file.name;
     sampleSlot.fileSource = sourceSlot; // The file input where we uploaded the sample
 
@@ -188,6 +186,29 @@ $(function() {
       return;
     }
 
+    if (evt.target.id == 'mode') {
+      if (mainModeAndParams.mode == 'PLAY') {
+        console.log(evt);
+        pushToScreen("Change a sample's play mode!");
+
+        mainModeAndParams.mode = 'MODE';
+
+        $('#mode').addClass('active');
+
+        disableButtonsBySituation('mode');
+
+        return;
+      }
+
+      pushToScreen('Cancelled sample mode change');
+
+      $('#mode').removeClass('active');
+
+      resetToPlayMode();
+
+      return;
+    }
+
     if (evt.target.id == 'mute') {
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen('Mute/Unmute a sample..');
@@ -298,6 +319,25 @@ $(function() {
       $('#link').removeClass('active');
 
       resetToPlayMode();
+
+      return;
+    }
+
+    if (mainModeAndParams.mode == 'MODE') {
+      if (sampleSlot.player.loop) {
+        sampleSlot.player.loop = false;
+        $(`#s${slotId}`).removeClass('loopMode');
+
+        pushToScreen('Changed slot ' + decToHex(slotId) + ' to normal play mode!');
+
+        return;
+      }
+
+      sampleSlot.player.loop = true;
+
+      $(`#s${slotId}`).addClass('loopMode');
+
+      pushToScreen('Changed slot ' + decToHex(slotId) + ' to loop play mode!');
 
       return;
     }

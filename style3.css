@@ -52,3 +52,7 @@ textarea {
 #buttons button.active.sampleMute {
   text-decoration: underline line-through;
 }
+
+#buttons button.loopMode {
+  border-style: dashed;
+}
