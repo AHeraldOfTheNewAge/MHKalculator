@@ -27,7 +27,7 @@ function enableAllButtons() { // Enable all the buttons!
   $('button').removeAttr('disabled');
 }
 
-function disableButtonsBySituation(sourceButton) {
+function disableButtonsBySituation(sourceButton, situation) {
   $('button').attr('disabled', true); // Disable everything!
   $(`#${sourceButton}`).removeAttr('disabled'); // Enable the source button
 
@@ -52,9 +52,6 @@ function copySample(slotId, sourceSlot) { //TODO -> Comment!
   }
 
   var sampleSlot = sampleSlots[slotId];
-
-  sampleSlot.contentStatus = 'LOADING';
-
   var file = $(`#fs${sourceSlot}`)[0].files[0]; // Get selected file
 
   if (!file) { //?????????
@@ -68,8 +65,9 @@ function copySample(slotId, sourceSlot) { //TODO -> Comment!
     var audioBuffer = await Tone.context.decodeAudioData(arrayBuffer); // Decode it into an AudioBuffer
 
     sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
+    console.log(sampleSlot.player.loaded, 'ce ne daplayer loaded?');
+
     sampleSlot.fileName = file.name;
-    sampleSlot.contentStatus = 'LOADED';
     sampleSlot.fileSource = sourceSlot; // The file input where we uploaded the sample
 
     $(`#s${slotId}`).addClass('sampleLoaded');
@@ -90,7 +88,6 @@ function initSampleButton(slotId) {
     fileName: '????',
     playMode: 'NORMAL', // Play mode can be: NORMAL, GATE, LOOP
     link: undefined, // If linked, playing this sample will trigger the linked sample as well
-    contentStatus: 'EMPTY', // status can be EMPTY, LOADING, LOADED
     fileSource: undefined,// Marks the fileInput where we uploaded the sample
   };
 
@@ -157,7 +154,6 @@ $(function() {
     initSampleButton(i);
   }
 
-  //TODO -> Use buffer instead of contentStatus(player.loaded)
   //TODO -> Use loop key on player, to loop!
   $('button').on('click', async (evt) => {
     // Independent buttons!
@@ -237,7 +233,7 @@ $(function() {
     var sampleSlot = sampleSlots[slotId];
 
     if (mainModeAndParams.mode == 'PLAY') {
-      if (sampleSlot.contentStatus == 'EMPTY') {
+      if (!sampleSlot.player.loaded) { // Empty slot!
         mainModeAndParams.mode = 'LOADINGSAMPLE'; // Mark we are loading sample
         mainModeAndParams.initiator = slotId;
 
@@ -246,36 +242,27 @@ $(function() {
         return;
       }
 
-      if (sampleSlot.contentStatus == 'LOADING') {
-        pushToScreen('Sample ' + decToHex(slotId) + ' still loading!');
+      if (sampleSlot.player.state == 'started') { // Sample is playing, stop it!
+        stopSample(slotId);
 
         return;
       }
 
-      if (sampleSlot.contentStatus == 'LOADED') {
-        if (sampleSlot.player.state == 'started') { // Sample is playing, stop it!
-          stopSample(slotId);
+      // Sample is not playing, try to play it!
+      await Tone.start(); // Ensure Tone.js context is started
 
-          return;
-        }
+      playSample(slotId);
 
-        // Sample is not playing, try to play it!
-        await Tone.start(); // Ensure Tone.js context is started
-
-        playSample(slotId);
-
-        return;
-      }
+      return;
     }
 
     if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
-      if (sampleSlot.contentStatus == 'EMPTY') {
+      if (!sampleSlot.player.loaded) { // Empty slot!
         if (slotId != mainModeAndParams.initiator) { // User must click on initiator to load new sample, cannot copy empty
           pushToScreen('Cannot copy slot ' + decToHex(slotId) + '  empty!');
 
           return;
         }
-
 
         pushToScreen('load a new sample to slot ' + decToHex(slotId));
 
@@ -286,107 +273,83 @@ $(function() {
         return;
       }
 
-      if (sampleSlot.contentStatus == 'LOADING') {
-        pushToScreen('Cannot copy slot ' + decToHex(slotId) + ' still loading!');
+      pushToScreen('Copied sample from ' + decToHex(slotId) + ' to ' + decToHex(mainModeAndParams.initiator) + '!');
+      copySample(mainModeAndParams.initiator, slotId);
+      resetToPlayMode(); // Go back to PLAY!
 
-        return;
-      }
-
-      if (sampleSlot.contentStatus == 'LOADED') {
-        pushToScreen('Copied sample from ' + decToHex(slotId) + ' to ' + decToHex(mainModeAndParams.initiator) + '!');
-        copySample(mainModeAndParams.initiator, slotId);
-        resetToPlayMode(); // Go back to PLAY!
-
-        return;
-      }
+      return;
     }
 
     if (mainModeAndParams.mode == 'LINK') {
-      if (sampleSlot.contentStatus == 'EMPTY') {
+      if (!sampleSlot.player.loaded) { // Empty slot!
         pushToScreen('Cannot use link on an empty slot!');
 
         return;
       }
 
-      if (sampleSlot.contentStatus == 'LOADING') {
-        pushToScreen('Cannot use link on a loading slot!');
+      if (!mainModeAndParams.initiator) {
+        mainModeAndParams.initiator = slotId;
+
+        pushToScreen('Slot ' + decToHex(slotId) + ' will be link source! Choose a sample to trigger!');
 
         return;
       }
 
-      if (sampleSlot.contentStatus == 'LOADED') {
-        if (!mainModeAndParams.initiator) {
-          mainModeAndParams.initiator = slotId;
+      if (mainModeAndParams.initiator == slotId) { // If click again on initiator, remove link! //TODO -> Add cannot link to self! + improve what is here, use sampleSlot instead of smplslt
+        sampleSlots[mainModeAndParams.initiator].link = undefined; // Marked as linked
 
-          pushToScreen('Slot ' + decToHex(slotId) + ' will be link source! Choose a sample to trigger!');
+        $(`#s${mainModeAndParams.initiator}`).text(decToHex(mainModeAndParams.initiator)); // Get back to original text
 
-          return;
-        }
-
-        if (mainModeAndParams.initiator == slotId) { // If click again on initiator, remove link! //TODO -> Add cannot link to self! + improve what is here, use sampleSlot instead of smplslt
-          sampleSlots[mainModeAndParams.initiator].link = undefined; // Marked as linked
-
-          $(`#s${mainModeAndParams.initiator}`).text(decToHex(mainModeAndParams.initiator)); // Get back to original text
-
-          pushToScreen('Unlinked slot ' + decToHex(mainModeAndParams.initiator));
-          $('#link').removeClass('active');
-
-          resetToPlayMode();
-
-          return;
-        }
-
-        if ((typeof sampleSlots[slotId].link != 'undefined') && sampleSlots[slotId].link == mainModeAndParams.initiator) { //TODO -> CANNTO LINK WITH A SAMPLE ALLREADY LINKED replace message
-          pushToScreen('Cannot link backwards!!!!');
-
-          return;
-        }
-
-        sampleSlots[mainModeAndParams.initiator].link = slotId; // Marked as linked
-
-        $(`#s${mainModeAndParams.initiator}`).text(decToHex(mainModeAndParams.initiator) + ' + ' + decToHex(slotId));
-
-        pushToScreen('Slot ' + decToHex(mainModeAndParams.initiator) + ' is now linked to ' + decToHex(slotId));
+        pushToScreen('Unlinked slot ' + decToHex(mainModeAndParams.initiator));
         $('#link').removeClass('active');
 
         resetToPlayMode();
 
         return;
       }
+
+      if ((typeof sampleSlots[slotId].link != 'undefined') && sampleSlots[slotId].link == mainModeAndParams.initiator) { //TODO -> CANNTO LINK WITH A SAMPLE ALLREADY LINKED replace message
+        pushToScreen('Cannot link backwards!!!!');
+
+        return;
+      }
+
+      sampleSlots[mainModeAndParams.initiator].link = slotId; // Marked as linked
+
+      $(`#s${mainModeAndParams.initiator}`).text(decToHex(mainModeAndParams.initiator) + ' + ' + decToHex(slotId));
+
+      pushToScreen('Slot ' + decToHex(mainModeAndParams.initiator) + ' is now linked to ' + decToHex(slotId));
+      $('#link').removeClass('active');
+
+      resetToPlayMode();
+
+      return;
     }
 
     if (mainModeAndParams.mode == 'MUTE') {
-      if (sampleSlot.contentStatus == 'EMPTY') {
+      if (!sampleSlot.player.loaded) {
         pushToScreen('Cannot mute an empty slot!');
 
         return;
       }
 
-      if (sampleSlot.contentStatus == 'LOADING') {
-        pushToScreen('Cannot mute a loading slot!');
+      if (sampleSlot.player.mute == true) {
+        sampleSlot.player.mute = false;
+
+        pushToScreen('Unmuted slot ' + decToHex(slotId));
+
+        $(`#s${slotId}`).removeClass('sampleMute');
 
         return;
       }
 
-      if (sampleSlot.contentStatus == 'LOADED') {
-        if (sampleSlot.player.mute == true) {
-          sampleSlot.player.mute = false;
+      sampleSlot.player.mute = true;
 
-          pushToScreen('Unmuted slot ' + decToHex(slotId));
+      pushToScreen('Muted slot ' + decToHex(slotId));
 
-          $(`#s${slotId}`).removeClass('sampleMute');
+      $(`#s${slotId}`).addClass('sampleMute');
 
-          return;
-        }
-
-        sampleSlot.player.mute = true;
-
-        pushToScreen('Muted slot ' + decToHex(slotId));
-
-        $(`#s${slotId}`).addClass('sampleMute');
-
-        return;
-      }
+      return;
     }
   });
 });
