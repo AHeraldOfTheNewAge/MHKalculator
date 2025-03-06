@@ -54,5 +54,5 @@ textarea {
 }
 
 #buttons button.loopMode {
-  border-style: dashed;
+  border: 2px dashed black;
 }
