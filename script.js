@@ -1,8 +1,11 @@
 var sampleSlots = [];
+
 var mainModeAndParams = { //TODO -> Comment
   mode: 'PLAY', // Modes can be PLAY, LOADINGSAMPLE, etc..
   initiator: undefined,
 }
+
+var effects = [];
 
 function pushToScreen(toAdd) {
   var screen = $('#screen');
@@ -25,6 +28,10 @@ function decToHex(slotId) {
 
 function enableAllButtons() { // Enable all the buttons!
   $('button').removeAttr('disabled');
+
+  // Hide effects buttons and show sample buttons
+  $('.sampleSlot').removeClass('hideButton');
+  $('.effectsSlot').addClass('hideButton');
 }
 
 function disableButtonsBySituation(buttonId, situation) {// Add class active!?
@@ -32,8 +39,16 @@ function disableButtonsBySituation(buttonId, situation) {// Add class active!?
     buttonId = 's' + buttonId;
   }
 
-  $('button:not("#help")').attr('disabled', true); // Disable everything!
+  $('button:not("#help, .effectsSlot")').attr('disabled', true); // Disable everything, not help button and effects slots!
   $(`#${buttonId}`).removeAttr('disabled'); // Enable the source button
+
+  if (buttonId == 'mfx') {
+    // Hide sample buttons and show effects buttons
+    $('.effectsSlot').removeClass('hideButton');
+    $('.sampleSlot').addClass('hideButton');
+
+    return;
+  }
 
   sampleSlots.forEach((sampleSlot, slotId) => { // Enable all buttons with a sample loaded on them!
     if (!sampleSlot.player.loaded) { // No sample loaded on this slot, skip!
@@ -44,7 +59,7 @@ function disableButtonsBySituation(buttonId, situation) {// Add class active!?
   });
 }
 
-function getSampleButtonId(target) {
+function getSampleButtonId(target) { // TODO ->Rename this to accomodate fx slots!
   return target.id.replace('s', '').replace('f', '');
 };
 
@@ -151,17 +166,60 @@ function toggleSample(slotId) {
 }
 
 $(function() {
-  pushToScreen(''); // Clear screen
-  pushToScreen('MHKalculator operational..'); // Initial message
-
   for (var i = 0; i <= 15; i++) { // Create 16 players for each sample button!
     initSampleButton(i);
   }
+
+  for (var i = 0; i <= 15; i++) { // Create 16 effects // TODO -> Move this out of here!
+    effects[i] = undefined;
+
+    switch (i) {
+      case 0: // Distortion
+        effects[i] = new Tone.Distortion({ distortion: 0.8, wet: 0 }).toDestination();
+
+        break;
+      case 1: // Feedback delay
+        effects[i] = new Tone.FeedbackDelay({ delayTime: 0.25, feedback: 0.5, wet: 0 }).toDestination();
+
+        break;
+      case 2: // Chorus
+        effects[i] = new Tone.Chorus({ frequency: 4, depth: 0.5, wet: 0 }).toDestination();
+
+        break;
+      default: // Distortion is default!?
+        effects[i] = new Tone.Distortion({ distortion: 0.8, wet: 0 }).toDestination();
+
+        break;
+    }
+  }
+
+  pushToScreen(''); // Clear screen
+  pushToScreen('MHKalculator operational..'); // Initial message
 
   //TODO -> Use loop key on player, to loop!
   $('button').on('click', async (evt) => {
     if (evt.target.id == 'help') {
       pushToScreen('Tutorial?');
+
+      return;
+    }
+
+    if (evt.target.id == 'mfx') { // Master effects!
+      if (mainModeAndParams.mode == 'PLAY') {
+        pushToScreen('Master effects');
+
+        mainModeAndParams.mode = 'MFX';
+
+        $('#mfx').addClass('active');
+        disableButtonsBySituation('mfx');
+
+        return;
+      }
+
+      pushToScreen('Back to play mode!');
+
+      $('#mfx').removeClass('active');
+      resetToPlayMode();
 
       return;
     }
@@ -188,7 +246,6 @@ $(function() {
 
     if (evt.target.id == 'mode') {
       if (mainModeAndParams.mode == 'PLAY') {
-        console.log(evt);
         pushToScreen("Change a sample's play mode!");
 
         mainModeAndParams.mode = 'MODE';
@@ -230,13 +287,46 @@ $(function() {
       return;
     }
 
-    if (isNaN(parseInt(evt.target.id.replace('s', '')))) { // Buttons not yet implemented!
+
+    if (!$(evt.target).hasClass('effectsSlot') && !$(evt.target).hasClass('sampleSlot')) {
       pushToScreen('Not yet implemented..');
 
       return;
     }
 
     var slotId = getSampleButtonId(evt.target);
+
+    if ($(evt.target).hasClass('effectsSlot')) {
+      // if (mainModeAndParams.mode == 'MFX') {
+      var effect = effects[slotId];
+
+      if (effect.wet.value == 0) {
+        for (var i = 0; i <= 15; i++) { // Connect all sampleSlots to this effect
+          sampleSlots[i].player.connect(effect);
+        }
+
+        effect.wet.value = 1;
+
+        $(`#f${slotId}`).addClass('active');
+
+        pushToScreen(`Enabled ${effect.name} on slot F` + decToHex(slotId));
+
+        return;
+      }
+
+      effect.wet.value = 0;
+
+      for (var i = 0; i <= 15; i++) { // Disconnect all sampleSlots from this effect
+        sampleSlots[i].player.disconnect(effect);
+      }
+
+      $(`#f${slotId}`).removeClass('active');
+
+      pushToScreen(`Disabled ${effect.name} on slot F` + decToHex(slotId));
+
+      return;
+    }
+
     var sampleSlot = sampleSlots[slotId];
 
     if (mainModeAndParams.mode == 'PLAY') {
