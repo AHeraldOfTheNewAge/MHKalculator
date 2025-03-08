@@ -196,7 +196,6 @@ $(function() {
   pushToScreen(''); // Clear screen
   pushToScreen('MHKalculator operational..'); // Initial message
 
-  //TODO -> Use loop key on player, to loop!
   $('button').on('click', async (evt) => {
     if (evt.target.id == 'help') {
       pushToScreen('Tutorial?');
