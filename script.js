@@ -175,7 +175,7 @@ $(function() {
 
     switch (i) {
       case 0: // Distortion
-        effects[i] = new Tone.Distortion({ distortion: 0.8, wet: 0 }).toDestination();
+        effects[i] = new Tone.Distortion({ distortion: 0.4, wet: 0 }).toDestination();
 
         break;
       case 1: // Feedback delay
@@ -184,6 +184,13 @@ $(function() {
         break;
       case 2: // Chorus
         effects[i] = new Tone.Chorus({ frequency: 4, depth: 0.5, wet: 0 }).toDestination();
+
+        break;
+      case 3: // BitCrusher
+        effects[i] = new Tone.BitCrusher({
+          bits: 10,       // Reduce bit depth (lower = more crunchy, range 1-16)
+          wet: 0       // Blend with original signal (0 = dry, 1 = full effect)
+        }).toDestination();
 
         break;
       default: // Distortion is default!?
