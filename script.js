@@ -170,10 +170,8 @@ $(function() {
     initSampleButton(i);
   }
 
-  for (var i = 0; i <= 5; i++) { // Create 16 effects // TODO -> Move this out of here! + fix for nr of effects
+  for (var i = 0; i <= 15; i++) { // Create 16 effects // TODO -> Move this out of here! + fix for nr of effects
     effects[i] = undefined;
-
-    break;
 
     switch (i) {
       case 0: // Distortion
