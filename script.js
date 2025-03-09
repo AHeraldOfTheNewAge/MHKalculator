@@ -183,12 +183,12 @@ $(function() {
 
         break;
       case 2: // Chorus
-        effects[i] = new Tone.Chorus({ frequency: 4, depth: 0.5, wet: 0 }).toDestination();
+        effects[i] = new Tone.Chorus({ frequency: 4, depth: 0.6, wet: 0 }).toDestination();
 
         break;
       case 3: // BitCrusher
         effects[i] = new Tone.BitCrusher({
-          bits: 10,       // Reduce bit depth (lower = more crunchy, range 1-16)
+          bits: 8,       // Reduce bit depth (lower = more crunchy, range 1-16)
           wet: 0       // Blend with original signal (0 = dry, 1 = full effect)
         }).toDestination();
 
@@ -306,12 +306,14 @@ $(function() {
       // if (mainModeAndParams.mode == 'MFX') {
       var effect = effects[slotId];
 
-      if (effect.wet.value == 0) {
+      if (effect.wet.value == 0) { // Effect is turned off
+        effect.wet.value = 1;
+
         for (var i = 0; i <= 15; i++) { // Connect all sampleSlots to this effect
-          sampleSlots[i].player.connect(effect);
+          sampleSlots[i].player.connect(effect); // Connect to the effect
+          sampleSlots[i].player.disconnect(Tone.Destination); // Disconnect from master
         }
 
-        effect.wet.value = 1;
 
         $(`#f${slotId}`).addClass('active');
 
@@ -320,11 +322,12 @@ $(function() {
         return;
       }
 
-      effect.wet.value = 0;
-
       for (var i = 0; i <= 15; i++) { // Disconnect all sampleSlots from this effect
+        sampleSlots[i].player.toDestination();
         sampleSlots[i].player.disconnect(effect);
       }
+
+      effect.wet.value = 0; // Turn down to 0 the effect
 
       $(`#f${slotId}`).removeClass('active');
 
