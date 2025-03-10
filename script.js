@@ -293,6 +293,15 @@ $(function() {
       return;
     }
 
+    if (evt.target.id == 'equal') { // Rotate equal, it looks like stop button! Stop everything from playing!
+      for (var i = 0; i <= 15; i++) {
+        sampleSlots[i].player.stop();
+      }
+
+      pushToScreen('Stop playing(everything!)');
+
+      return;
+    }
 
     if (!$(evt.target).hasClass('effectsSlot') && !$(evt.target).hasClass('sampleSlot')) {
       pushToScreen('Not yet implemented..');
