@@ -272,25 +272,27 @@ $(function() {
       return;
     }
 
-    if (evt.target.id == 'mute') {
+    if (evt.target.id == 'minus') {
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen('Mute/Unmute a sample..');
-
         mainModeAndParams.mode = 'MUTE';
-
-        $('#mute').addClass('active');
-        disableButtonsBySituation('mute');
+        $('#minus').addClass('active');
+        disableButtonsBySituation('minus');
 
         return;
       }
 
-      pushToScreen('Cancelled muting');
+      if (mainModeAndParams.mode == 'MUTE') {
+        pushToScreen('Cancelled muting');
 
-      $('#mute').removeClass('active');
+        $('#minus').removeClass('active');
 
-      resetToPlayMode();
+        resetToPlayMode();
 
-      return;
+        return;
+      }
+
+      return; // TODO
     }
 
     if (evt.target.id == 'equal') { // Rotate equal, it looks like stop button! Stop everything from playing!
