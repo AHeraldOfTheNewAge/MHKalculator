@@ -26,15 +26,7 @@ function decToHex(slotId) {
   return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'][slotId];
 }
 
-function enableAllButtons() { // Enable all the buttons!
-  $('button').removeAttr('disabled');
-
-  // Hide effects buttons and show sample buttons
-  $('.sampleSlot').removeClass('hideButton');
-  $('.effectsSlot').addClass('hideButton');
-}
-
-function disableButtonsBySituation(buttonId, situation) {// Add class active!?
+function disableButtonsBySituation(buttonId, situation) { // Add class active!?
   if (parseInt(buttonId) == buttonId) {
     buttonId = 's' + buttonId;
   }
@@ -98,7 +90,14 @@ function resetToPlayMode() {
   mainModeAndParams.mode = 'PLAY';
   mainModeAndParams.initiator = undefined;
 
-  enableAllButtons(); //TODO -> MAYBE THIS FUNCTION WILL BE A PART OF THIS
+  $('button').removeAttr('disabled');
+  $('button').removeClass('active');
+
+  // Hide effects buttons and show sample buttons
+  $('.sampleSlot').removeClass('hideButton');
+  $('.effectsSlot').addClass('hideButton');
+
+  // pushToScreen('Back to play mode!'); //??
 }
 
 function initSampleButton(slotId) {
@@ -111,7 +110,7 @@ function initSampleButton(slotId) {
   };
 
   sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future?
-    $(`#s${slotId}`).removeClass('active');
+    $(`#s${slotId}`).removeClass('playing');
 
     pushToScreen('Stop ' + decToHex(slotId));
   };
@@ -130,7 +129,7 @@ function playSample(slotId) {
   // if (sampleSlot.player.buffer) {} //TODO -> In the past if the buffer was not existent, we emptied the slot
   sampleSlot.player.start();
 
-  $(`#s${slotId}`).addClass('active');
+  $(`#s${slotId}`).addClass('playing');
 
   pushToScreen(`Play ${sampleSlot.fileName} on slot ` + decToHex(slotId));
 
@@ -224,7 +223,6 @@ $(function() {
 
       pushToScreen('Back to play mode!');
 
-      $('#mfx').removeClass('active');
       resetToPlayMode();
 
       return;
@@ -243,7 +241,6 @@ $(function() {
       }
 
       pushToScreen('Cancelled linking');
-      $('#link').removeClass('active');
 
       resetToPlayMode();
 
@@ -265,8 +262,6 @@ $(function() {
 
       pushToScreen('Cancelled sample mode change');
 
-      $('#mode').removeClass('active');
-
       resetToPlayMode();
 
       return;
@@ -284,8 +279,6 @@ $(function() {
 
       if (mainModeAndParams.mode == 'MUTE') {
         pushToScreen('Cancelled muting');
-
-        $('#minus').removeClass('active');
 
         resetToPlayMode();
 
@@ -326,7 +319,7 @@ $(function() {
         }
 
 
-        $(`#f${slotId}`).addClass('active');
+        $(`#f${slotId}`).addClass('playing');
 
         pushToScreen(`Enabled ${effect.name} on slot F` + decToHex(slotId));
 
@@ -340,7 +333,7 @@ $(function() {
 
       effect.wet.value = 0; // Turn down to 0 the effect
 
-      $(`#f${slotId}`).removeClass('active');
+      $(`#f${slotId}`).removeClass('playing');
 
       pushToScreen(`Disabled ${effect.name} on slot F` + decToHex(slotId));
 
@@ -407,7 +400,6 @@ $(function() {
         $(`#s${mainModeAndParams.initiator}`).text(decToHex(mainModeAndParams.initiator)); // Get back to original text
 
         pushToScreen('Unlinked slot ' + decToHex(mainModeAndParams.initiator));
-        $('#link').removeClass('active');
 
         resetToPlayMode();
 
@@ -426,7 +418,6 @@ $(function() {
       $(`#s${mainModeAndParams.initiator}`).text(decToHex(mainModeAndParams.initiator) + ' + ' + decToHex(slotId));
 
       pushToScreen('Slot ' + decToHex(mainModeAndParams.initiator) + ' is now linked to ' + decToHex(slotId));
-      $('#link').removeClass('active');
 
       resetToPlayMode();
 

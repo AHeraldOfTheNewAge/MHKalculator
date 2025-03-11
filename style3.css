@@ -41,6 +41,10 @@ textarea {
   font-weight: bold;
 }
 
+#buttons button.sampleSlot.playing {
+  font-style: italic;
+}
+
 #buttons button.active:not(.sampleMute) {
   text-decoration: underline;
 }
