@@ -34,6 +34,10 @@ function disableButtonsBySituation(buttonId, situation) { // Add class active!?
   $('button:not("#help, .effectsSlot")').attr('disabled', true); // Disable everything, not help button and effects slots!
   $(`#${buttonId}`).removeAttr('disabled'); // Enable the source button
 
+  if (buttonId == 'volume') { // Reenable plus and minus buttons, needed for volume
+    $('#minus, #plus').removeAttr('disabled');
+  }
+
   if (buttonId == 'mfx') {
     // Hide sample buttons and show effects buttons
     $('.effectsSlot').removeClass('hideButton');
@@ -51,7 +55,7 @@ function disableButtonsBySituation(buttonId, situation) { // Add class active!?
   });
 }
 
-function getSampleButtonId(target) { // TODO ->Rename this to accomodate fx slots!
+function getSampleOrFxButtonId(target) { // TODO ->Rename this to accomodate fx slots!
   return target.id.replace('s', '').replace('f', '');
 };
 
@@ -116,7 +120,7 @@ function initSampleButton(slotId) {
   };
 
   $(`#fs${slotId}`).on("change", function(evt) { // In file we keep the samples!
-    var slotId = getSampleButtonId(evt.target);
+    var slotId = getSampleOrFxButtonId(evt.target);
 
     copySample(slotId);
   });
@@ -267,7 +271,7 @@ $(function() {
       return;
     }
 
-    if (evt.target.id == 'minus') {
+    if (evt.target.id == 'minus' && (mainModeAndParams.mode == 'PLAY' || mainModeAndParams.mode == 'MUTE')) {
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen('Mute/Unmute a sample..');
         mainModeAndParams.mode = 'MUTE';
@@ -277,15 +281,54 @@ $(function() {
         return;
       }
 
-      if (mainModeAndParams.mode == 'MUTE') {
-        pushToScreen('Cancelled muting');
+      // MUTE
+      pushToScreen('Cancelled muting');
+      resetToPlayMode();
+
+      return;
+    }
+
+    if (evt.target.id == 'volume' || evt.target.id == 'minus' || evt.target.id == 'plus') {
+      if (mainModeAndParams.mode == 'PLAY') {
+        pushToScreen('Change sample volume');
+
+        mainModeAndParams.mode = 'VOLUME';
+
+        $('#volume').addClass('active');
+
+        disableButtonsBySituation('volume');
+
+        return;
+      }
+
+      // mainModeAndParams.mode == 'VOLUME'
+      if (evt.target.id == 'volume') { // Only the volume button can go back to play mode
+        pushToScreen('Cancelled volume change');
 
         resetToPlayMode();
 
         return;
       }
 
-      return; // TODO
+      if (!mainModeAndParams.initiator) {
+        pushToScreen("Select a slot to change it's volume");
+
+        return;
+      }
+
+      var sampleSlotVolume = sampleSlots[mainModeAndParams.initiator].player.volume.value;
+
+      if (evt.target.id == 'minus') {
+        sampleSlotVolume -= 1;
+      } else { // plus
+        sampleSlotVolume += 1;
+      }
+
+      sampleSlots[mainModeAndParams.initiator].player.volume.value = sampleSlotVolume;
+
+      pushToScreen('Slot ' + decToHex(mainModeAndParams.initiator) + ' volume adjusted to ' + sampleSlotVolume + ' dB');
+      // console.log(sampleSlotVolume.);
+      return;
     }
 
     if (evt.target.id == 'equal') { // Rotate equal, it looks like stop button! Stop everything from playing!
@@ -304,7 +347,7 @@ $(function() {
       return;
     }
 
-    var slotId = getSampleButtonId(evt.target);
+    var slotId = getSampleOrFxButtonId(evt.target);
 
     if ($(evt.target).hasClass('effectsSlot')) {
       // if (mainModeAndParams.mode == 'MFX') {
@@ -468,6 +511,41 @@ $(function() {
       $(`#s${slotId}`).addClass('sampleMute');
 
       return;
+    }
+
+    if (mainModeAndParams.mode == 'VOLUME') {
+      if (!sampleSlot.player.loaded) {
+        pushToScreen('Cannot change volume on an empty slot!');
+
+        return;
+      }
+
+      if (!mainModeAndParams.initiator) {
+        mainModeAndParams.initiator = slotId;
+
+        $(`#s${slotId}`).addClass('active');
+
+        pushToScreen('Change volume on ' + decToHex(slotId));
+
+        return;
+      }
+
+      if (mainModeAndParams.initiator == slotId) { // Unselect?
+        mainModeAndParams.initiator = undefined;
+
+        $(`#s${slotId}`).removeClass('active');
+
+        pushToScreen('Unselected for volume change on ' + decToHex(slotId));
+
+        return;
+      }
+
+      $(`#s${mainModeAndParams.initiator}`).removeClass('active');
+      $(`#s${slotId}`).addClass('active');
+
+      mainModeAndParams.initiator = slotId;
+
+      pushToScreen('Change volume on ' + decToHex(slotId));
     }
   });
 });
