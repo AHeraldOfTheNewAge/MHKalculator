@@ -105,7 +105,7 @@ function initSampleButton(slotId) {
     player: new Tone.Player().toDestination(), // Create a Tone.Player instance
     fileName: '????',
     playMode: 'NORMAL', // Play mode can be: NORMAL, GATE, LOOP
-    link: undefined, // If linked, playing this sample will trigger the linked sample as well
+    link: undefined, // If linked, playing this sample will trigger the linked sample as well(also stopping)
     fileSource: undefined,// Marks the fileInput where we uploaded the sample
   };
 
@@ -137,7 +137,7 @@ function playSample(slotId) {
     return;
   }
 
-  toggleSample(sampleSlot.link); // Trigger the link! //TODO -> Use tone transport! Assure stuff plays at the same time!
+  toggleSample(sampleSlot.link); // Trigger the link! //TODO -> Use tone transport! Assure stuff plays at the same time!?
 }
 
 function stopSample(slotId) {
@@ -390,6 +390,7 @@ $(function() {
         mainModeAndParams.initiator = slotId;
 
         pushToScreen('Slot ' + decToHex(slotId) + ' will be link source! Choose a sample to trigger!');
+        $(`#s${slotId}`).addClass('active'); // So it's marked as selected!
 
         return;
       }
