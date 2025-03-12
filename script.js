@@ -87,7 +87,7 @@ function copySample(slotId, sourceSlot) {
     sampleSlot.fileSource = sourceSlot; // The file input where we uploaded the sample
 
     $(`#s${slotId}`).addClass('sampleLoaded');
-    pushToScreen(`Sample ${sampleSlot.fileName} loaded on slot ${decToHex(slotId)} (${sampleSlot.player.buffer.duration}s)`);
+    pushToScreen(`Sample ${sampleSlot.fileName} loaded on slot ${decToHex(slotId)} (${sampleSlot.player.buffer.duration.toFixed(2)}s)`);
 
     resetToPlayMode(); // Go back to PLAY! //TODO -> This may fail!
   };
@@ -331,8 +331,8 @@ $(function() {
 
       sampleSlots[mainModeAndParams.initiator].player.volume.value = sampleSlotVolume;
 
-      pushToScreen('Slot ' + decToHex(mainModeAndParams.initiator) + ' volume adjusted to ' + sampleSlotVolume + ' dB');
-      // console.log(sampleSlotVolume.);
+      pushToScreen(`Slot ${decToHex(mainModeAndParams.initiator)} volume adjusted to ${sampleSlotVolume.toFixed(2)} dB`); //TODO -> Make more comprehensive
+
       return;
     }
 
