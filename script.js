@@ -1,11 +1,11 @@
 var sampleSlots = [];
+var effects = [];
+var chops = {};
 
 var mainModeAndParams = { //TODO -> Comment
   mode: 'PLAY', // Modes can be PLAY, LOADINGSAMPLE, etc..
   initiator: undefined,
 }
-
-var effects = [];
 
 function pushToScreen(toAdd) {
   var screen = $('#screen');
@@ -70,6 +70,9 @@ function copySample(slotId, sourceSlot) {
   var file = $(`#fs${sourceSlot}`)[0].files[0]; // Get selected file
 
   if (!file) { //?????????
+    pushToScreen('Something failed!');
+    resetToPlayMode(); // Go back to PLAY!
+
     return;
   }
 
@@ -84,7 +87,9 @@ function copySample(slotId, sourceSlot) {
     sampleSlot.fileSource = sourceSlot; // The file input where we uploaded the sample
 
     $(`#s${slotId}`).addClass('sampleLoaded');
-    pushToScreen(`Sample ${sampleSlot.fileName} loaded on slot ` + decToHex(slotId));
+    pushToScreen(`Sample ${sampleSlot.fileName} loaded on slot ${decToHex(slotId)} (${sampleSlot.player.buffer.duration}s)`);
+
+    resetToPlayMode(); // Go back to PLAY! //TODO -> This may fail!
   };
 
   reader.readAsArrayBuffer(file); // Read file
@@ -423,7 +428,6 @@ $(function() {
 
       pushToScreen('Copied sample from ' + decToHex(slotId) + ' to ' + decToHex(mainModeAndParams.initiator) + '!');
       copySample(mainModeAndParams.initiator, slotId);
-      resetToPlayMode(); // Go back to PLAY!
 
       return;
     }
