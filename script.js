@@ -212,8 +212,27 @@ $(function() {
   pushToScreen('MHKalculator operational..'); // Initial message
 
   $('button').on('click', async (evt) => {
-    if (evt.target.id == 'help') {
+    if (evt.target.id == 'help') { //TODO -> Move this somewhere else, at the moment it got removed!
       pushToScreen('Tutorial?');
+
+      return;
+    }
+
+    if (evt.target.id == 'clr') {
+      if (mainModeAndParams.mode == 'PLAY') {
+        pushToScreen('Clear a sample slot!');
+
+        mainModeAndParams.mode = 'CLR';
+
+        $('#clr').addClass('active');
+
+        disableButtonsBySituation('clr');
+
+        return;
+      }
+
+      pushToScreen('Back to play mode!');
+      resetToPlayMode();
 
       return;
     }
@@ -428,6 +447,12 @@ $(function() {
 
       pushToScreen('Copied sample from ' + decToHex(slotId) + ' to ' + decToHex(mainModeAndParams.initiator) + '!');
       copySample(mainModeAndParams.initiator, slotId);
+
+      return;
+    }
+
+    if (mainModeAndParams.mode == 'CLR') {
+      pushToScreen('Clear is not yet implemented, lol!');
 
       return;
     }
