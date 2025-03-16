@@ -451,8 +451,55 @@ $(function() {
       return;
     }
 
-    if (mainModeAndParams.mode == 'CLR') {
-      pushToScreen('Clear is not yet implemented, lol!');
+    if (mainModeAndParams.mode == 'CLR') { //TODO -> Improve this, do something more efficient, too much copying fron other buttons!
+      //TODO=> ALSO CHANGE VOLUME BACK TO 0
+
+      $(`#s${slotId}`).attr('disabled', true); // Disable this sample slot so we wont press it again for clear!
+
+      if (sampleSlot.player.loop) {
+        sampleSlot.player.loop = false;
+        $(`#s${slotId}`).removeClass('loopMode');
+
+        pushToScreen('Removed loop mode from slot ' + decToHex(slotId));
+      }
+
+      if (sampleSlot.player.mute == true) {
+        sampleSlot.player.mute = false;
+
+        pushToScreen('Removed mute from slot ' + decToHex(slotId));
+
+        $(`#s${slotId}`).removeClass('sampleMute');
+      }
+
+      sampleSlot.player.stop(); // Stop the sample(in case it is playing!) This also removes the playing class(because the callback is triggered on stop!)
+
+      sampleSlot.fileName = ''; // No longer a file name on this slot
+      sampleSlot.fileSource = undefined; // No longer a source!
+
+      if (typeof sampleSlot.link != 'undefined') { // If this sample slot was linked as source to another sampleslot we remove the link
+        $(`#s${slotId}`).text(decToHex(slotId)); // Get back to original text
+
+        pushToScreen(`Sample slot ${decToHex(slotId)} no longer a link source for ${decToHex(sampleSlot.link)}`);
+
+        sampleSlot.link = undefined;
+      }
+
+      sampleSlot.player.buffer.dispose();
+
+      $(`#s${slotId}`).removeClass('sampleLoaded'); // No longer loaded!
+
+      for (let i = 0; i < 15; i++) { // Go trough all sample slots and remove all slots that are link source for the sampleslot we clear
+        if (typeof sampleSlots[i].link == 'undefined') {
+          continue;
+        }
+
+        $(`#s${i}`).text(decToHex(i)); // Get back to original text
+        pushToScreen(`Sample slot ${decToHex(i)} no longer a link source for ${decToHex(slotId)}`);
+
+        sampleSlots[i].link = undefined;
+      }
+
+      pushToScreen(`Cleared sample slot ${decToHex(slotId)}`);
 
       return;
     }
