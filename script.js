@@ -31,10 +31,10 @@ function disableButtonsBySituation(buttonId, situation) { // Add class active!?
     buttonId = 's' + buttonId;
   }
 
-  $('button:not("#help, .effectsSlot")').attr('disabled', true); // Disable everything, not help button and effects slots!
+  $('button:not("#help, #equal, .effectsSlot")').attr('disabled', true); // Disable everything, not help button, equal and effects slots!
   $(`#${buttonId}`).removeAttr('disabled'); // Enable the source button
 
-  if (buttonId == 'volume') { // Reenable plus and minus buttons, needed for volume
+  if (buttonId == 'plus') { // Reenable plus and minus buttons, needed for volume
     $('#minus, #plus').removeAttr('disabled');
   }
 
@@ -55,7 +55,7 @@ function disableButtonsBySituation(buttonId, situation) { // Add class active!?
   });
 }
 
-function getSampleOrFxButtonId(target) { // TODO ->Rename this to accomodate fx slots!
+function getSampleOrFxButtonId(target) {
   return target.id.replace('s', '').replace('f', '');
 };
 
@@ -218,6 +218,24 @@ $(function() {
       return;
     }
 
+    if (evt.target.id == 'equal') {
+      if (mainModeAndParams.mode == 'PLAY') { // Rotate equal, it looks like stop button! Stop everything from playing!
+        for (var i = 0; i <= 15; i++) {
+          sampleSlots[i].player.stop();
+        }
+
+        pushToScreen('Stop playing(everything!)');
+
+        return;
+      }
+
+      // Go back to play mode! Whatever mode was selected before!
+      pushToScreen('Go back to play mode!');
+      resetToPlayMode();
+
+      return;
+    }
+
     if (evt.target.id == 'clr') {
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen('Clear a sample slot!');
@@ -297,39 +315,27 @@ $(function() {
 
     if (evt.target.id == 'minus' && (mainModeAndParams.mode == 'PLAY' || mainModeAndParams.mode == 'MUTE')) {
       if (mainModeAndParams.mode == 'PLAY') {
-        pushToScreen('Mute/Unmute a sample..');
         mainModeAndParams.mode = 'MUTE';
         $('#minus').addClass('active');
+
         disableButtonsBySituation('minus');
+        pushToScreen('Mute/Unmute a sample..');
 
         return;
       }
 
-      // MUTE
       pushToScreen('Cancelled muting');
       resetToPlayMode();
 
       return;
     }
 
-    if (evt.target.id == 'volume' || evt.target.id == 'minus' || evt.target.id == 'plus') {
+    if (evt.target.id == 'minus' || evt.target.id == 'plus') { // Only plus gets here in play mode!
       if (mainModeAndParams.mode == 'PLAY') {
-        pushToScreen('Change sample volume');
-
         mainModeAndParams.mode = 'VOLUME';
 
-        $('#volume').addClass('active');
-
-        disableButtonsBySituation('volume');
-
-        return;
-      }
-
-      // mainModeAndParams.mode == 'VOLUME'
-      if (evt.target.id == 'volume') { // Only the volume button can go back to play mode
-        pushToScreen('Cancelled volume change');
-
-        resetToPlayMode();
+        disableButtonsBySituation('plus');
+        pushToScreen('Change sample volume');
 
         return;
       }
@@ -351,16 +357,6 @@ $(function() {
       sampleSlots[mainModeAndParams.initiator].player.volume.value = sampleSlotVolume;
 
       pushToScreen(`Slot ${decToHex(mainModeAndParams.initiator)} volume adjusted to ${sampleSlotVolume.toFixed(2)} dB`); //TODO -> Make more comprehensive
-
-      return;
-    }
-
-    if (evt.target.id == 'equal') { // Rotate equal, it looks like stop button! Stop everything from playing!
-      for (var i = 0; i <= 15; i++) {
-        sampleSlots[i].player.stop();
-      }
-
-      pushToScreen('Stop playing(everything!)');
 
       return;
     }
