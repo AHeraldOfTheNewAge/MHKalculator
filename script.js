@@ -95,6 +95,10 @@ function copySample(slotId, sourceSlot) {
   reader.readAsArrayBuffer(file); // Read file
 }
 
+function changeConsoleMode(newMode) {
+  $('#consoleMode').text(newMode);
+}
+
 function resetToPlayMode() {
   mainModeAndParams.mode = 'PLAY';
   mainModeAndParams.initiator = undefined;
