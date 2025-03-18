@@ -18,7 +18,7 @@ body {
 #console {
   grid-area: console;
   display: grid;
-  grid-template-rows: 5fr 1fr;
+  grid-template-rows: 7fr 1fr;
 }
 
 #console #screen {
