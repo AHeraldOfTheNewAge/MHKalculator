@@ -119,7 +119,7 @@ function initSampleButton(slotId) {
   sampleSlots[slotId] = {
     player: new Tone.Player().toDestination(), // Create a Tone.Player instance
     fileName: '????',
-    playMode: 'NORMAL', // Play mode can be: NORMAL, GATE, LOOP
+    playMode: 'NORMAL', // PlayModes are NORMAL, LOOP, REVERSE, REVERSELOOP, we cycle trough them!
     link: undefined, // If linked, playing this sample will trigger the linked sample as well(also stopping)
     fileSource: undefined,// Marks the fileInput where we uploaded the sample
   };
@@ -540,20 +540,48 @@ $(function() {
     }
 
     if (mainModeAndParams.mode == 'MODE') {
-      if (sampleSlot.player.loop) {
-        sampleSlot.player.loop = false;
-        $(`#s${slotId}`).removeClass('loopMode');
+      switch (sampleSlot.playMode) { // Cycle trough playMode is the current mode, we go to the next
+        case 'NORMAL':
+          sampleSlot.player.loop = true;
+          sampleSlot.playMode = 'LOOP';
 
-        pushToScreen('Changed slot ' + decToHex(slotId) + ' to normal play mode!');
+          $(`#s${slotId}`).addClass('loopMode');
 
-        return;
+          pushToScreen('Changed slot ' + decToHex(slotId) + ' to loop play mode!');
+
+          break;
+        case 'LOOP':
+          sampleSlot.player.loop = false;
+          sampleSlot.player.reverse = true;
+          sampleSlot.playMode = 'REVERSE';
+
+          $(`#s${slotId}`).removeClass('loopMode');
+          $(`#s${slotId}`).addClass('reverseMode');
+
+          pushToScreen('Changed slot ' + decToHex(slotId) + ' to reverse play mode!');
+
+          break;
+        case 'REVERSE':
+          sampleSlot.player.loop = true;
+          sampleSlot.playMode = 'REVERSELOOP';
+
+          $(`#s${slotId}`).addClass('loopMode');
+
+          pushToScreen('Changed slot ' + decToHex(slotId) + ' to reverse loop play mode!');
+
+          break;
+        default: // REVERSE LOOP
+          sampleSlot.player.loop = false;
+          sampleSlot.player.reverse = false;
+          sampleSlot.playMode = 'NORMAL';
+
+          $(`#s${slotId}`).removeClass('reverseMode');
+          $(`#s${slotId}`).removeClass('loopMode');
+
+          pushToScreen('Changed slot ' + decToHex(slotId) + ' to normal play mode!');
+
+          break;
       }
-
-      sampleSlot.player.loop = true;
-
-      $(`#s${slotId}`).addClass('loopMode');
-
-      pushToScreen('Changed slot ' + decToHex(slotId) + ' to loop play mode!');
 
       return;
     }

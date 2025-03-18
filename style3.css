@@ -86,6 +86,10 @@ body {
   border: 2px dashed black;
 }
 
+#buttons button.reverseMode {
+  rotate: 180deg;
+}
+
 #buttons button.hideButton {
   display: none;
 }
