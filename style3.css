@@ -18,26 +18,33 @@ body {
 #console {
   grid-area: console;
   display: grid;
-  grid-template-columns: 8fr 2fr;
-  grid-template-rows: 4fr 1fr;
-  gap: 10px;
+  grid-template-rows: 5fr 1fr;
 }
 
 #console #screen {
-  grid-column: 1 / 3;
   grid-row: 1;
+  resize: none;
+  border-bottom: none;
 }
 
-#console #consoleMode {
-  grid-column: 1;
+#console #consoleInfo {
   grid-row: 2;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid black;
 }
 
-#console #help {
-  grid-column: 2;
-  grid-row: 2;
+#console #consoleInfo #consoleMode {
+  background-color: gray;
+  padding-right: 1rem;
 }
 
+#console #consoleInfo #help {
+  margin-right: 1.5rem;
+  font-weight: bold;
+}
+
+/* #console #consoleInfo #consoleMode */
 #buttons {
   grid-area: buttons;
   display: grid;

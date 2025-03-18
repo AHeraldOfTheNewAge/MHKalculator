@@ -22,6 +22,11 @@ function pushToScreen(toAdd) {
   screen.scrollTop(screen[0].scrollHeight); // Scroll
 }
 
+function changeMainMode(newMode) {
+  mainModeAndParams.mode = newMode;
+  $('#consoleMode').text(newMode);
+}
+
 function decToHex(slotId) {
   return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'][slotId];
 }
@@ -31,7 +36,7 @@ function disableButtonsBySituation(buttonId, situation) { // Add class active!?
     buttonId = 's' + buttonId;
   }
 
-  $('button:not("#help, #equal, .effectsSlot")').attr('disabled', true); // Disable everything, not help button, equal and effects slots!
+  $('button:not("#equal, .effectsSlot")').attr('disabled', true); // Disable everything, not equal and effects slots!
   $(`#${buttonId}`).removeAttr('disabled'); // Enable the source button
 
   if (buttonId == 'plus') { // Reenable plus and minus buttons, needed for volume
@@ -95,12 +100,9 @@ function copySample(slotId, sourceSlot) {
   reader.readAsArrayBuffer(file); // Read file
 }
 
-function changeConsoleMode(newMode) {
-  $('#consoleMode').text(newMode);
-}
-
 function resetToPlayMode() {
-  mainModeAndParams.mode = 'PLAY';
+  changeMainMode('PLAY');
+
   mainModeAndParams.initiator = undefined;
 
   $('button').removeAttr('disabled');
@@ -216,12 +218,6 @@ $(function() {
   pushToScreen('MHKalculator operational..'); // Initial message
 
   $('button').on('click', async (evt) => {
-    if (evt.target.id == 'help') { //TODO -> Move this somewhere else, at the moment it got removed!
-      pushToScreen('Tutorial?');
-
-      return;
-    }
-
     if (evt.target.id == 'equal') {
       if (mainModeAndParams.mode == 'PLAY') { // Rotate equal, it looks like stop button! Stop everything from playing!
         for (var i = 0; i <= 15; i++) {
@@ -243,8 +239,7 @@ $(function() {
     if (evt.target.id == 'clr') {
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen('Clear a sample slot!');
-
-        mainModeAndParams.mode = 'CLR';
+        changeMainMode('CLR');
 
         $('#clr').addClass('active');
 
@@ -262,8 +257,7 @@ $(function() {
     if (evt.target.id == 'mfx') { // Master effects!
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen('Master effects');
-
-        mainModeAndParams.mode = 'MFX';
+        changeMainMode('MFX');
 
         $('#mfx').addClass('active');
         disableButtonsBySituation('mfx');
@@ -281,8 +275,8 @@ $(function() {
     if (evt.target.id == 'link') {
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen('Link a sample with another, choose a source..');
+        changeMainMode('LINK');
 
-        mainModeAndParams.mode = 'LINK';
         $('#link').addClass('active');
 
         disableButtonsBySituation('link');
@@ -300,8 +294,7 @@ $(function() {
     if (evt.target.id == 'mode') {
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen("Change a sample's play mode!");
-
-        mainModeAndParams.mode = 'MODE';
+        changeMainMode('MODE');
 
         $('#mode').addClass('active');
 
@@ -319,7 +312,8 @@ $(function() {
 
     if (evt.target.id == 'minus' && (mainModeAndParams.mode == 'PLAY' || mainModeAndParams.mode == 'MUTE')) {
       if (mainModeAndParams.mode == 'PLAY') {
-        mainModeAndParams.mode = 'MUTE';
+        changeMainMode('MUTE');
+
         $('#minus').addClass('active');
 
         disableButtonsBySituation('minus');
@@ -336,7 +330,7 @@ $(function() {
 
     if (evt.target.id == 'minus' || evt.target.id == 'plus') { // Only plus gets here in play mode!
       if (mainModeAndParams.mode == 'PLAY') {
-        mainModeAndParams.mode = 'VOLUME';
+        changeMainMode('VOLUME');
 
         disableButtonsBySituation('plus');
         pushToScreen('Change sample volume');
@@ -411,7 +405,8 @@ $(function() {
 
     if (mainModeAndParams.mode == 'PLAY') {
       if (!sampleSlot.player.loaded) { // Empty slot!
-        mainModeAndParams.mode = 'LOADINGSAMPLE'; // Mark we are loading sample
+        changeMainMode('LOADINGSAMPLE');
+
         mainModeAndParams.initiator = slotId;
 
         pushToScreen("You can load a new sample on " + decToHex(slotId) + " by pressing the same button again or press another sample button to copy it's content!");
