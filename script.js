@@ -39,11 +39,11 @@ function disableButtonsBySituation(buttonId, situation) { // Add class active!?
   $('button:not("#equal, .effectsSlot")').attr('disabled', true); // Disable everything, not equal and effects slots!
   $(`#${buttonId}`).removeAttr('disabled'); // Enable the source button
 
-  if (buttonId == 'plus') { // Reenable plus and minus buttons, needed for volume
+  if (buttonId == 'plus' || buttonId == 'playbackrate') { // Reenable plus and minus buttons, needed for volume or sample play speed!
     $('#minus, #plus').removeAttr('disabled');
   }
 
-  if (buttonId == 'mfx') {
+  if (buttonId == 'fx') {
     // Hide sample buttons and show effects buttons
     $('.effectsSlot').removeClass('hideButton');
     $('.sampleSlot').addClass('hideButton');
@@ -254,37 +254,54 @@ $(function() {
       return;
     }
 
-    if (evt.target.id == 'mfx') { // Master effects!
+    if (evt.target.id == 'playbackrate') {
       if (mainModeAndParams.mode == 'PLAY') {
-        pushToScreen('Master effects');
-        changeMainMode('MFX');
+        $('#playbackrate').addClass('active');
 
-        $('#mfx').addClass('active');
-        disableButtonsBySituation('mfx');
+        disableButtonsBySituation('playbackrate');
+        changeMainMode('PLAYBACKRATE');
+        pushToScreen('Change sample speed!');
 
         return;
       }
 
-      pushToScreen('Back to play mode!');
+      pushToScreen('Cancelled sample speed changing!'); //TODO -> Just add a normal message on resetToPlayMode and remove this!
 
       resetToPlayMode();
 
       return;
     }
 
-    if (evt.target.id == 'link') {
+    if (evt.target.id == 'link') { //TODO ->Allow cross link!!
       if (mainModeAndParams.mode == 'PLAY') {
-        pushToScreen('Link a sample with another, choose a source..');
-        changeMainMode('LINK');
-
         $('#link').addClass('active');
 
         disableButtonsBySituation('link');
+        changeMainMode('LINK');
+        pushToScreen('Link a sample with another, choose a source..');
 
         return;
       }
 
       pushToScreen('Cancelled linking');
+
+      resetToPlayMode();
+
+      return;
+    }
+
+    if (evt.target.id == 'fx') { // Master effects!
+      if (mainModeAndParams.mode == 'PLAY') {
+        pushToScreen('Master effects');
+        changeMainMode('FX');
+
+        $('#fx').addClass('active');
+        disableButtonsBySituation('fx');
+
+        return;
+      }
+
+      pushToScreen('Back to play mode!');
 
       resetToPlayMode();
 
@@ -328,16 +345,50 @@ $(function() {
       return;
     }
 
-    if (evt.target.id == 'minus' || evt.target.id == 'plus') { // Only plus gets here in play mode!
-      if (mainModeAndParams.mode == 'PLAY') {
+    if (evt.target.id == 'minus' || evt.target.id == 'plus') { // In play mode only plus gets here
+      if (mainModeAndParams.mode == 'PLAY') { // By default the plus button is used for volume change!
         changeMainMode('VOLUME');
-
         disableButtonsBySituation('plus');
         pushToScreen('Change sample volume');
 
         return;
       }
 
+      if (mainModeAndParams.mode == 'PLAYBACKRATE') {
+        if (!mainModeAndParams.initiator) {
+          pushToScreen("Select a slot to change it's speed");
+
+          return;
+        }
+
+        var sampleSlotPlaybackRate = sampleSlots[mainModeAndParams.initiator].player.playbackRate;
+
+        if (evt.target.id == 'minus') {
+          sampleSlotPlaybackRate -= 0.1;
+        } else { // plus
+          sampleSlotPlaybackRate += 0.1;
+        }
+
+        if (sampleSlotPlaybackRate < 0.1) {
+          pushToScreen(`Slot ${decToHex(mainModeAndParams.initiator)} speed cannot go lower than 0.1`);
+
+          return;
+        }
+
+        if (sampleSlotPlaybackRate > 10) {
+          pushToScreen(`Slot ${decToHex(mainModeAndParams.initiator)} speed cannot go higher than 10`);
+
+          return;
+        }
+
+        sampleSlots[mainModeAndParams.initiator].player.playbackRate = sampleSlotPlaybackRate;
+
+        pushToScreen(`Slot ${decToHex(mainModeAndParams.initiator)} speed adjusted to ${sampleSlotPlaybackRate.toFixed(1)}`); //TODO -> Make more comprehensive
+
+        return;
+      }
+
+      // Volume
       if (!mainModeAndParams.initiator) {
         pushToScreen("Select a slot to change it's volume");
 
@@ -368,7 +419,7 @@ $(function() {
     var slotId = getSampleOrFxButtonId(evt.target);
 
     if ($(evt.target).hasClass('effectsSlot')) {
-      // if (mainModeAndParams.mode == 'MFX') {
+      // if (mainModeAndParams.mode == 'FX') {
       var effect = effects[slotId];
 
       if (effect.wet.value == 0) { // Effect is turned off
@@ -494,6 +545,43 @@ $(function() {
       return;
     }
 
+    if (mainModeAndParams.mode == 'PLAYBACKRATE') { //TODO COpied too much from volume mode, try to get what is common inside a function
+      if (!sampleSlot.player.loaded) { //TODO -> Why this case?
+        pushToScreen('Cannot change speed of an empty slot!');
+
+        return;
+      }
+
+      if (!mainModeAndParams.initiator) {
+        mainModeAndParams.initiator = slotId;
+
+        $(`#s${slotId}`).addClass('active');
+
+        pushToScreen('Change speed on ' + decToHex(slotId));
+
+        return;
+      }
+
+      if (mainModeAndParams.initiator == slotId) { // Unselect?
+        mainModeAndParams.initiator = undefined;
+
+        $(`#s${slotId}`).removeClass('active');
+
+        pushToScreen('Unselected for speed change on ' + decToHex(slotId));
+
+        return;
+      }
+
+      $(`#s${mainModeAndParams.initiator}`).removeClass('active');
+      $(`#s${slotId}`).addClass('active');
+
+      mainModeAndParams.initiator = slotId;
+
+      pushToScreen('Change speed on ' + decToHex(slotId));
+
+      return;
+    }
+
     if (mainModeAndParams.mode == 'LINK') {
       if (!mainModeAndParams.initiator) { // Source of link
         mainModeAndParams.initiator = slotId;
@@ -609,7 +697,7 @@ $(function() {
 
     if (mainModeAndParams.mode == 'VOLUME') {
       if (!sampleSlot.player.loaded) {
-        pushToScreen('Cannot change volume on an empty slot!');
+        pushToScreen('Cannot change volume of an empty slot!');
 
         return;
       }
