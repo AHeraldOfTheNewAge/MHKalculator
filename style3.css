@@ -31,16 +31,15 @@ body {
   grid-row: 2;
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid black;
 }
 
 #console #consoleInfo #consoleMode {
   background-color: gray;
-  padding-right: 1rem;
+  width: 10rem;
 }
 
 #console #consoleInfo #help {
-  margin-right: 1.5rem;
+  margin-right: 1.7rem;
   font-weight: bold;
 }
 
