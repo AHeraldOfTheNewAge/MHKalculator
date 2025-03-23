@@ -137,7 +137,18 @@ function initSampleButton(slotId) {
   });
 }
 
-function playSample(slotId) {
+/**
+ * Starts playing the sample
+ * 
+ * @param {integer} slotId 
+ * @param {integer} sourceSlotId if linked whe know who started the chain basically! Helpful to not trigger again if it's the starter of a chain
+ * @returns 
+ */
+function playSample(slotId, sourceSlotId) {
+  if (slotId == sourceSlotId) { // If this sample slot triggers a link that will eventually trigger back this link, this avoids the infinite loop
+    return;
+  }
+
   var sampleSlot = sampleSlots[slotId];
 
   // Sample is not playing, try to play it!
@@ -152,10 +163,25 @@ function playSample(slotId) {
     return;
   }
 
-  toggleSample(sampleSlot.link); // Trigger the link! //TODO -> Use tone transport! Assure stuff plays at the same time!?
+  if (typeof sourceSlotId == 'undefined') { // This sample slot is the starter of the chain
+    sourceSlotId = slotId;
+  }
+
+  toggleSample(sampleSlot.link, sourceSlotId); // Trigger the link! //TODO -> Use tone transport! Assure stuff plays at the same time!?
 }
 
-function stopSample(slotId) {
+/**
+ * Stops playing the sample
+ * 
+ * @param {integer} slotId 
+ * @param {integer} sourceSlotId if linked whe know who started the chain basically! Helpful to not trigger again if it's the starter of a chain
+ * @returns 
+ */
+function stopSample(slotId, sourceSlotId) {
+  if (slotId == sourceSlotId) { // If this sample slot triggers a link that will eventually trigger back this link, this avoids the infinite loop
+    return;
+  }
+
   var sampleSlot = sampleSlots[slotId];
 
   sampleSlot.player.stop();
@@ -164,19 +190,30 @@ function stopSample(slotId) {
     return;
   }
 
-  toggleSample(sampleSlot.link);
+  if (typeof sourceSlotId == 'undefined') { // This sample slot is the starter of the chain
+    sourceSlotId = slotId;
+  }
+
+  toggleSample(sampleSlot.link, sourceSlotId);
 }
 
-function toggleSample(slotId) {
+/**
+ * If a sample is stopped, it plays it, if playing, stops..
+ * 
+ * @param {integer} slotId 
+ * @param {integer} sourceSlotId if linked whe know who started the chain basically!
+ * @returns 
+ */
+function toggleSample(slotId, sourceSlotId) {
   var sampleSlot = sampleSlots[slotId];
 
   if (sampleSlot.player.state == 'started') { // Sample is playing, stop it!
-    stopSample(slotId);
+    stopSample(slotId, sourceSlotId);
 
     return;
   }
 
-  playSample(slotId);
+  playSample(slotId, sourceSlotId);
 }
 
 $(function() {
@@ -599,13 +636,6 @@ $(function() {
 
         pushToScreen('Unlinked slot ' + decToHex(mainModeAndParams.initiator));
 
-        resetToPlayMode();
-
-        return;
-      }
-
-      if ((typeof sampleSlots[slotId].link != 'undefined') && sampleSlots[slotId].link == mainModeAndParams.initiator) {
-        pushToScreen('Cannot link backwards!!!!');
         resetToPlayMode();
 
         return;
