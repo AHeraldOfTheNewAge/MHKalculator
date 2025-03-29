@@ -15,7 +15,7 @@ body.sp2 #console #screen {
 }
 
 body.sp2 #buttons {
-	gap: 8px;
+	gap: 6px;
 	padding: 10px;
 }
 

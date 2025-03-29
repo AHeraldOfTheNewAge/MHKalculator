@@ -10,7 +10,7 @@ body.sadDreams button {
 
 body.sadDreams #console #screen {
 	font-size: 1rem;
-	border-color: #b2b9e0;
+	border-color: #f2eaf5;
 }
 
 body.sadDreams button {
@@ -21,5 +21,4 @@ body.sadDreams button {
 
 body.sadDreams button:disabled {
 	background-color: #e8e8e8;
-	color: #f69898;
 }
