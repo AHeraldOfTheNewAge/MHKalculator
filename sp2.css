@@ -1,0 +1,29 @@
+body.sp2 {
+	background-color: #070c10;
+}
+
+body.sp2,
+body.sp2 #screen,
+body.sp2 button {
+	color: #f35e32;
+}
+
+body.sp2 #console #screen {
+	font-size: 1rem;
+	border-color: #070c10;
+	background-color: #292b2d;
+}
+
+body.sp2 #buttons {
+	gap: 8px;
+	padding: 10px;
+}
+
+body.sp2 button {
+	background-color: #a7aea1;
+	border-radius: .2rem;
+}
+
+body.sp2 button:disabled {
+	background-color: #a3a5a2;
+}

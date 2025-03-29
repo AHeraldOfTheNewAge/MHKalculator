@@ -392,7 +392,7 @@ $(function() {
 
     if (evt.target.id == 'fx') { // Master effects!
       if (mainModeAndParams.mode == 'PLAY') {
-        pushToScreen('Master effects');
+        pushToScreen('Effects');
         changeMainMode('FX');
 
         $('#fx').addClass('active');
