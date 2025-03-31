@@ -35,6 +35,7 @@ body {
 
 #console #consoleInfo #consoleMode {
   width: 10rem;
+  font-weight: bold;
 }
 
 #console #consoleInfo #help {
