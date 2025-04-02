@@ -1,15 +1,28 @@
+@font-face {
+    font-family: 'medieval';
+    src: url('./fonts/OldLondon.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body.sp2 {
 	background-color: #070c10;
+	font-family: 'medieval', sans-serif;
+}
+
+body.sp2 #appTitle {
+	font-size: 1.6rem;
+	padding: 5px;
 }
 
 body.sp2,
-body.sp2 #screen,
-body.sp2 button {
-	color: #af310c;
+body.sp2 #screen {
+	font-family: 'medieval', sans-serif;
+	color: #812b1a;
 }
 
 body.sp2 #console #screen {
-	font-size: 1rem;
+	font-size: 1.2rem;
 	border-color: #070c10;
 	background-color: #292b2d;
 }
@@ -19,8 +32,10 @@ body.sp2 #buttons {
 	padding: 10px;
 }
 
-body.sp2 button {
-	background-color: #a0b38f;
+body.sp2 #buttons button {
+	font-family: 'medieval', sans-serif;
+	background-color: #967326;
+	color: #240a02;
 	border-radius: .5rem;
 	box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.4),
 				inset -2px -2px 5px rgba(0, 0, 0, 0.3),
@@ -28,6 +43,14 @@ body.sp2 button {
 				-1px -1px 3px rgba(255, 255, 255, 0.1);
 }
 
-body.sp2 button:disabled {
-	background-color: #a3a5a2;
+body.sp2 #buttons button[id="equal"] {
+	background-color: #52653c;
+}
+
+body.sp2 #buttons button.sampleSlot {
+	background-color: #5d5a30;
+}
+
+body.sp2 #buttons button:disabled {
+	background-color: #40342e;
 }
