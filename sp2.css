@@ -37,14 +37,19 @@ body.sp2 #buttons button {
 	background-color: #967326;
 	color: #240a02;
 	border-radius: .5rem;
-	box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.4),
+	box-shadow: inset 0px 1px 2px rgba(255, 255, 255, 0.4),
 		inset -2px -2px 5px rgba(0, 0, 0, 0.3),
 		3px 5px 9px rgba(0, 0, 0, 0.5),
 		-1px -1px 3px rgba(255, 255, 255, 0.1);
 }
 
+body.sp2 #buttons button[id="chopB"],
+body.sp2 #buttons button[id="chopE"] {
+	background-color: #6e5620;
+}
+
 body.sp2 #buttons button[id="equal"] {
-	background-color: #52653c;
+	background-color: #454c3d;
 }
 
 body.sp2 #buttons button.sampleSlot,
