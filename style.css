@@ -4,7 +4,7 @@ body {
     "appTitle"
     "console"
     "buttons";
-  grid-template-rows: 0.7fr 3.3fr 6fr;
+  grid-template-rows: 0.8fr 3.4fr 6fr;
   height: 100dvh;
   /* Full viewport height */
   margin: 0;

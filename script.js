@@ -410,7 +410,7 @@ $(function() {
           break;
       }
 
-      pushToScreen(`Change constant to ${mainModeAndParams.unit}`);
+      pushToScreen(`Changed modifier to ${mainModeAndParams.unit}`);
 
       return;
     }

@@ -6,7 +6,7 @@
 }
 
 body.sp2 {
-	background-color: #070c10;
+	background-color: #2f2f2e;
 	font-family: 'medieval', sans-serif;
 }
 
@@ -22,9 +22,9 @@ body.sp2 #screen {
 }
 
 body.sp2 #console #screen {
-	font-size: 1.2rem;
-	border-color: #070c10;
-	background-color: #292b2d;
+	font-size: 1.5rem;
+	border-color: #2f2f2e;
+	background-color: #242323;
 }
 
 body.sp2 #buttons {
@@ -34,8 +34,8 @@ body.sp2 #buttons {
 
 body.sp2 #buttons button {
 	font-family: 'medieval', sans-serif;
-	background-color: #967326;
-	color: #240a02;
+	background-color: #887752;
+	color: #5e3027;
 	border-radius: .5rem;
 	box-shadow: inset 0px 1px 2px rgba(255, 255, 255, 0.4),
 		inset -2px -2px 5px rgba(0, 0, 0, 0.3),
@@ -45,18 +45,24 @@ body.sp2 #buttons button {
 
 body.sp2 #buttons button[id="chopB"],
 body.sp2 #buttons button[id="chopE"] {
-	background-color: #6e5620;
+	background-color: #7f6a3b;
+}
+
+body.sp2 #buttons button[id="idontknowyetmaybesequence"],
+body.sp2 #buttons button[id="minus"],
+body.sp2 #buttons button[id="plus"] {
+	background-color: #7d6643;
 }
 
 body.sp2 #buttons button[id="equal"] {
-	background-color: #454c3d;
+	background-color: #565d4d;
 }
 
 body.sp2 #buttons button.sampleSlot,
 body.sp2 #buttons button.effectsSlot {
-	background-color: #5d5a30;
+	background-color: #534e3d;
 }
 
 body.sp2 #buttons button:disabled {
-	background-color: #40342e;
+	background-color: #59524f;
 }
