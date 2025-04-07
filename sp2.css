@@ -1,8 +1,8 @@
 @font-face {
-    font-family: 'medieval';
-    src: url('./fonts/OldLondon.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+	font-family: 'medieval';
+	src: url('./fonts/OldLondon.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
 }
 
 body.sp2 {
@@ -38,16 +38,17 @@ body.sp2 #buttons button {
 	color: #240a02;
 	border-radius: .5rem;
 	box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.4),
-				inset -2px -2px 5px rgba(0, 0, 0, 0.3),
-				3px 5px 9px rgba(0, 0, 0, 0.5),
-				-1px -1px 3px rgba(255, 255, 255, 0.1);
+		inset -2px -2px 5px rgba(0, 0, 0, 0.3),
+		3px 5px 9px rgba(0, 0, 0, 0.5),
+		-1px -1px 3px rgba(255, 255, 255, 0.1);
 }
 
 body.sp2 #buttons button[id="equal"] {
 	background-color: #52653c;
 }
 
-body.sp2 #buttons button.sampleSlot {
+body.sp2 #buttons button.sampleSlot,
+body.sp2 #buttons button.effectsSlot {
 	background-color: #5d5a30;
 }
 

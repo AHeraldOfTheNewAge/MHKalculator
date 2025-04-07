@@ -5,6 +5,7 @@ var mainModeAndParams = { //TODO -> Comment
   mode: 'PLAY', // Modes can be PLAY, LOADINGSAMPLE, etc..
   initiator: undefined,
   fx: undefined, //TODO -> Comment and improve
+  unit: 0.1
 }
 
 function pushToScreen(toAdd) {
@@ -40,7 +41,7 @@ function disableButtonsBySituation(buttonId, situation) { // Add class active!?
   $(`#${buttonId}`).removeAttr('disabled'); // Enable the source button
 
   if (buttonId == 'plus' || buttonId == 'playbackrate') { // Reenable plus and minus buttons, needed for volume or sample play speed!
-    $('#minus, #plus').removeAttr('disabled');
+    $('#minus, #plus, #changeConst').removeAttr('disabled');
   }
 
   if (buttonId == 'fx') {
@@ -390,6 +391,30 @@ $(function() {
       return;
     }
 
+    if (evt.target.id == 'changeConst') { //TODO -> Imrove so it's easier to understand
+      switch (mainModeAndParams.unit) {
+        case 0.1:
+          mainModeAndParams.unit = 0.01;
+          $(`#${evt.target.id}`).text('M.01');
+
+          break;
+        case 0.01:
+          mainModeAndParams.unit = 1;
+          $(`#${evt.target.id}`).text('M1');
+
+          break;
+        case 1:
+          mainModeAndParams.unit = 0.1;
+          $(`#${evt.target.id}`).text('M.1');
+
+          break;
+      }
+
+      pushToScreen(`Change constant to ${mainModeAndParams.unit}`);
+
+      return;
+    }
+
     if (evt.target.id == 'fx') { // Master effects!
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen('Effects');
@@ -464,9 +489,9 @@ $(function() {
         var sampleSlotPlaybackRate = sampleSlots[mainModeAndParams.initiator].player.playbackRate;
 
         if (evt.target.id == 'minus') {
-          sampleSlotPlaybackRate -= 0.1;
+          sampleSlotPlaybackRate -= mainModeAndParams.unit;
         } else { // plus
-          sampleSlotPlaybackRate += 0.1;
+          sampleSlotPlaybackRate += mainModeAndParams.unit;
         }
 
         if (sampleSlotPlaybackRate < 0.1) {
@@ -483,7 +508,7 @@ $(function() {
 
         sampleSlots[mainModeAndParams.initiator].player.playbackRate = sampleSlotPlaybackRate;
 
-        pushToScreen(`Slot ${decToHex(mainModeAndParams.initiator)} speed adjusted to ${sampleSlotPlaybackRate.toFixed(1)}`); //TODO -> Make more comprehensive
+        pushToScreen(`Slot ${decToHex(mainModeAndParams.initiator)} speed adjusted to ${sampleSlotPlaybackRate.toFixed(2)}`); //TODO -> Make more comprehensive
 
         return;
       }
@@ -498,9 +523,9 @@ $(function() {
       var sampleSlotVolume = sampleSlots[mainModeAndParams.initiator].player.volume.value;
 
       if (evt.target.id == 'minus') {
-        sampleSlotVolume -= 1;
+        sampleSlotVolume -= mainModeAndParams.unit;
       } else { // plus
-        sampleSlotVolume += 1;
+        sampleSlotVolume += mainModeAndParams.unit;
       }
 
       sampleSlots[mainModeAndParams.initiator].player.volume.value = sampleSlotVolume;
