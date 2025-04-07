@@ -633,6 +633,7 @@ $(function() {
 
     if (mainModeAndParams.mode == 'CLR') { //TODO -> Improve this, do something more efficient, too much copying fron other buttons!
       //TODO=> ALSO CHANGE VOLUME BACK TO 0
+      //TODO -> ALSO CHANGE PLAYBACKRATE BACK TO 0, OR 1, WHAT IT IS1?
 
       $(`#s${slotId}`).attr('disabled', true); // Disable this sample slot so we wont press it again for clear!
 
