@@ -32,7 +32,7 @@ function decToHex(slotId) {
   return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'][slotId];
 }
 
-function disableButtonsBySituation(buttonId, situation) { // Add class active!?
+function disableButtonsBySituation(buttonId) { // Add class active!?
   if (parseInt(buttonId) == buttonId) {
     buttonId = 's' + buttonId;
   }
@@ -45,6 +45,8 @@ function disableButtonsBySituation(buttonId, situation) { // Add class active!?
   }
 
   if (buttonId == 'fx') {
+    $('#changeConst').removeAttr('disabled'); // Enable change const on effects
+
     // Hide sample buttons and show effects buttons
     $('.effectsSlot').removeClass('hideButton');
     $('.sampleSlot').addClass('hideButton');
@@ -53,11 +55,11 @@ function disableButtonsBySituation(buttonId, situation) { // Add class active!?
   }
 
   sampleSlots.forEach((sampleSlot, slotId) => { // Enable all buttons with a sample loaded on them!
-    if (!sampleSlot.player.loaded) { // No sample loaded on this slot, skip!
+    if (!sampleSlot.player.loaded) {
       return;
     }
 
-    $(`#s${slotId}`).removeAttr('disabled'); // Enable this sample slot, it has a sample on it!
+    $(`#s${slotId}`).removeAttr('disabled');
   });
 }
 
