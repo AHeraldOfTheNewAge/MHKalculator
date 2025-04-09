@@ -30,7 +30,7 @@ body {
 #console #consoleInfo {
   grid-row: 2;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 #console #consoleInfo #consoleMode {
@@ -39,7 +39,7 @@ body {
 }
 
 #console #consoleInfo #help {
-  margin-right: 1.7rem;
+  padding-left: 1.5rem;
   font-weight: bold;
 }
 
@@ -54,7 +54,7 @@ body {
 
 #buttons button {
   text-decoration-thickness: 3px;
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 
 #buttons #equal {

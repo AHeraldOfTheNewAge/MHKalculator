@@ -22,7 +22,14 @@ body.sp2 #screen {
 }
 
 body.sp2 #console #screen {
-	font-size: 1.5rem;
+	/* background-image: url('images/.....jpg');
+	background-size: contain; */
+	/* keeps image fully inside the textarea */
+	/* background-repeat: no-repeat;
+	background-position: top; */
+	/* positions image at the top-left corner */
+
+	font-size: 1.4rem;
 	border-color: #2f2f2e;
 	background-color: #242323;
 }
