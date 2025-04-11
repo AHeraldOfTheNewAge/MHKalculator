@@ -1,11 +1,18 @@
 var sampleSlots = [];
 var effects = [];
+var recorder; //TODO -> Comment this
 
 var mainModeAndParams = { //TODO -> Comment
   mode: 'PLAY', // Modes can be PLAY, LOADINGSAMPLE, etc..
   initiator: undefined,
   fx: undefined, //TODO -> Comment and improve
-  unit: 0.1
+  unit: 0.1,
+  recording: {
+    state: 0,
+    mutex: false,
+    url: undefined,
+    player: undefined
+  },
 }
 
 function pushToScreen(toAdd) {
@@ -217,6 +224,89 @@ function toggleSample(slotId, sourceSlotId) {
   }
 
   playSample(slotId, sourceSlotId);
+}
+
+/**
+ * Start recording(everything)
+ */
+async function startRecording() { //TODO -> MUTEX?
+  if (mainModeAndParams.recording.mutex) { //TODO
+    return;
+  }
+
+  mainModeAndParams.recording.mutex = true;
+
+  recorder = new Tone.Recorder(); // Initialise the recorder!
+
+  Tone.getDestination().connect(recorder); //TODO
+
+  await Tone.start(); // Always start audio context with user interaction //TODO -> Is this necessary!?
+  recorder.start();
+
+  mainModeAndParams.recording.state = 1;
+  mainModeAndParams.recording.mutex = false; // Release the mutex!
+
+  pushToScreen('Started recording!');
+}
+
+/**
+ * Function to stop recording
+ */
+async function stopRecording() {///TODO -> Mutex?
+  if (mainModeAndParams.recording.mutex) { //TODO
+    return;
+  }
+
+  mainModeAndParams.recording.mutex = true;
+
+  // Stop the recorder and get the recording
+  const recordingBlob = await recorder.stop();
+
+  mainModeAndParams.recording.url = URL.createObjectURL(recordingBlob);
+
+  mainModeAndParams.recording.player = new Tone.Player({ url: mainModeAndParams.recording.url }).toDestination();
+
+  // Create a download link for the recording
+  // Hold this for export!?
+  // const url = URL.createObjectURL(recording);
+  // const anchor = document.createElement("a");
+  // anchor.download = "tone-js-recording-" + new Date().toISOString() + ".webm";
+  // anchor.href = url;
+  // anchor.click();
+
+  mainModeAndParams.recording.state = 2;
+  mainModeAndParams.recording.mutex = false; // Release the mutex!
+
+  pushToScreen('Stopped recording!');
+}
+
+function playPauseRecording() {
+  if (mainModeAndParams.recording.mutex) { //TODO
+    return;
+  }
+
+  mainModeAndParams.recording.mutex = true;
+
+  if (!mainModeAndParams.recording.player.loaded) {
+    pushToScreen('Recording finished, but still loading!');
+    mainModeAndParams.recording.mutex = false;
+
+    return;
+  }
+
+  if (mainModeAndParams.recording.player.state == 'started') { // Recording is playing, stop it!
+    mainModeAndParams.recording.player.stop();
+
+    pushToScreen('Stopped playing the recording!');
+  } else { // Start playing the recording!
+    mainModeAndParams.recording.player.start();
+
+    pushToScreen('Started playing the recording!');
+  }
+
+  mainModeAndParams.recording.mutex = false;
+
+  return;
 }
 
 $(function() {
@@ -431,6 +521,24 @@ $(function() {
       pushToScreen('Back to play mode!');
 
       resetToPlayMode();
+
+      return;
+    }
+
+    if (evt.target.id == 'rec') {
+      if (!mainModeAndParams.recording.state) { // Recording not yet started!
+        startRecording();
+
+        return;
+      }
+
+      if (mainModeAndParams.recording.state == 1) { // Currently recording, stop and save the recording so we can play it(hear it lol)
+        stopRecording();
+
+        return;
+      }
+
+      playPauseRecording();
 
       return;
     }
