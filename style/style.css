@@ -68,7 +68,7 @@ body #buttons button.reverseMode {
 body #buttons button.hideButton {
   display: none;
 }
-body #buttons #equal {
+body #buttons button#equal {
   grid-column: 5/5;
   grid-row: 5/7;
 }/*# sourceMappingURL=style.css.map */

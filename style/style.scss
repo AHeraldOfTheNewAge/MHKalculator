@@ -84,11 +84,11 @@ body {
 			&.hideButton {
 				display: none;
 			}
-		}
 
-		#equal {
-			grid-column: 5/5;
-			grid-row: 5/7;
+			&#equal {
+				grid-column: 5/5;
+				grid-row: 5/7;
+			}
 		}
 	}
 }
