@@ -5,10 +5,20 @@
 	font-style: normal;
 }
 
+$MAIN_COLOR_BODY_SCREEN: #812b1a;
+$BACKGROUND_COLOR: #2f2f2e;
+$SCREEN_COLOR: #242323;
+$BUTTON_COLOR: #5e3027;
+$BUTTON_COLOR_CHOP: #7f6a3b;
+$BUTTON_COLOR_VOLUMES: #7d6643;
+$BUTTON_COLOR_EQUAL: #565d4d;
+$BUTTON_COLOR_SAMPLE_FX: #534e3d;
+$BUTTON_COLOR_DISABLED: #59524f;
+
 body.sp2 {
-	background-color: #2f2f2e;
+	background-color: $BACKGROUND_COLOR;
 	font-family: 'oldd', sans-serif;
-	color: #812b1a;
+	color: $MAIN_COLOR_BODY_SCREEN;
 
 	#appTitle {
 		font-size: 1.6rem;
@@ -23,11 +33,11 @@ body.sp2 {
 		background-position: top; */
 		/* positions image at the top-left corner */
 		font-family: 'oldd', sans-serif;
-		color: #812b1a;
+		color: $MAIN_COLOR_BODY_SCREEN;
 		
 		font-size: 1.4rem;
-		border-color: #2f2f2e;
-		background-color: #242323;
+		border-color: $BACKGROUND_COLOR;
+		background-color: $SCREEN_COLOR;
 	}
 
 	#buttons {
@@ -37,37 +47,36 @@ body.sp2 {
 		button {
 			font-family: 'oldd', sans-serif;
 			background-color: #887752;
-			color: #5e3027;
+			color: $BUTTON_COLOR;
 			border-radius: .5rem;
 			box-shadow: inset 0px 1px 2px rgba(255, 255, 255, 0.4),
 				inset -2px -2px 5px rgba(0, 0, 0, 0.3),
 				3px 5px 9px rgba(0, 0, 0, 0.5),
 				-1px -1px 3px rgba(255, 255, 255, 0.1);
-		}
 
+			&#chopB,
+			&#chopE {
+				background-color: $BUTTON_COLOR_CHOP;
+			}
 
-		button[id="chopB"],
-		button[id="chopE"] {
-			background-color: #7f6a3b;
-		}
+			&#idontknowyetmaybesequence,
+			&#minus,
+			&#plus {
+				background-color: $BUTTON_COLOR_VOLUMES;
+			}
 
-		button[id="idontknowyetmaybesequence"],
-		button[id="minus"],
-		button[id="plus"] {
-			background-color: #7d6643;
-		}
+			&#equal {
+				background-color: $BUTTON_COLOR_EQUAL;
+			}
 
-		button[id="equal"] {
-			background-color: #565d4d;
-		}
+			&.sampleSlot,
+			&.effectsSlot {
+				background-color: $BUTTON_COLOR_SAMPLE_FX;
+			}
 
-		button.sampleSlot,
-		button.effectsSlot {
-			background-color: #534e3d;
-		}
-
-		button:disabled {
-			background-color: #59524f;
+			&:disabled {
+				background-color: $BUTTON_COLOR_DISABLED !important;
+			}
 		}
 	}
 }

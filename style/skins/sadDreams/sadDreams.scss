@@ -1,0 +1,25 @@
+$MAIN_COLOR_SAD_DREAMS: #4a5697;
+$SECOND_COLOR_SAD_DREAMS: #f2eaf5;
+
+body.sadDreams {
+	background-color: $SECOND_COLOR_SAD_DREAMS;
+	color: $MAIN_COLOR_SAD_DREAMS;
+
+	#console #screen {
+		font-size: 1rem;
+		border-color: $SECOND_COLOR_SAD_DREAMS;
+		color: $MAIN_COLOR_SAD_DREAMS;
+		border: 5px solid $MAIN_COLOR_SAD_DREAMS;
+	}
+
+	button {
+		border: 2px solid $MAIN_COLOR_SAD_DREAMS;
+		border-radius: .3rem;
+		background-color: white;
+		color: $MAIN_COLOR_SAD_DREAMS;
+		
+		&:disabled {
+			background-color: $SECOND_COLOR_SAD_DREAMS;
+		}
+	}
+}

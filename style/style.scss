@@ -1,0 +1,94 @@
+body {
+	display: grid;
+	grid-template-areas:
+    	"appTitle"
+    	"console"
+    	"buttons";
+	grid-template-rows: 0.8fr 3.4fr 6fr;
+	height: 100dvh;
+	/* Full viewport height */
+	margin: 0;
+
+	#appTitle {
+		grid-area: appTitle;
+		padding: 10px;
+	}
+
+	#console {
+		grid-area: console;
+		display: grid;
+		grid-template-rows: 7fr 1fr;
+
+		#screen {
+			grid-row: 1;
+			resize: none;
+			border: 10px solid lightgrey;
+		}
+
+		#consoleInfo {
+			grid-row: 2;
+			display: flex;
+			justify-content: space-around;
+
+			#consoleMode {
+				width: 10rem;
+				font-weight: bold;
+			}
+
+			#help {
+				padding-left: 1.5rem;
+				font-weight: bold;
+			}
+		}
+	}
+
+	#buttons {
+		grid-area: buttons;
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		gap: 5px;
+		padding: 3px;
+
+		button {
+  			text-decoration-thickness: 3px;
+  			font-size: 1.2rem;
+
+			&.sampleLoaded {
+				font-weight: bold;
+			}
+
+			&.playing {
+  				font-style: italic;
+			}
+
+			&.active:not(.sampleMute) {
+				text-decoration: underline;
+			}
+
+			&.sampleMute:not(.active) {
+				text-decoration: line-through;
+			}
+
+			&.active.sampleMute {
+				text-decoration: underline line-through;
+			}
+
+			&.loopMode {
+				border: 2px dashed;
+			}
+
+			&.reverseMode {
+			  rotate: 180deg;
+			}
+
+			&.hideButton {
+				display: none;
+			}
+		}
+
+		#equal {
+			grid-column: 5/5;
+			grid-row: 5/7;
+		}
+	}
+}

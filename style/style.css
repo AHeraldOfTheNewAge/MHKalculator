@@ -1,95 +1,74 @@
 body {
   display: grid;
-  grid-template-areas:
-    "appTitle"
-    "console"
-    "buttons";
+  grid-template-areas: "appTitle" "console" "buttons";
   grid-template-rows: 0.8fr 3.4fr 6fr;
   height: 100dvh;
   /* Full viewport height */
   margin: 0;
 }
-
-#appTitle {
+body #appTitle {
   grid-area: appTitle;
   padding: 10px;
 }
-
-#console {
+body #console {
   grid-area: console;
   display: grid;
   grid-template-rows: 7fr 1fr;
 }
-
-#console #screen {
+body #console #screen {
   grid-row: 1;
   resize: none;
   border: 10px solid lightgrey;
 }
-
-#console #consoleInfo {
+body #console #consoleInfo {
   grid-row: 2;
   display: flex;
   justify-content: space-around;
 }
-
-#console #consoleInfo #consoleMode {
+body #console #consoleInfo #consoleMode {
   width: 10rem;
   font-weight: bold;
 }
-
-#console #consoleInfo #help {
+body #console #consoleInfo #help {
   padding-left: 1.5rem;
   font-weight: bold;
 }
-
-/* #console #consoleInfo #consoleMode */
-#buttons {
+body #buttons {
   grid-area: buttons;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 5px;
   padding: 3px;
 }
-
-#buttons button {
+body #buttons button {
   text-decoration-thickness: 3px;
   font-size: 1.2rem;
 }
-
-#buttons #equal {
-  grid-column: 5/5;
-  grid-row: 5/7;
-}
-
-#buttons button.sampleLoaded {
+body #buttons button.sampleLoaded {
   font-weight: bold;
 }
-
-#buttons button.playing {
+body #buttons button.playing {
   font-style: italic;
 }
-
-#buttons button.active:not(.sampleMute) {
+body #buttons button.active:not(.sampleMute) {
   text-decoration: underline;
 }
-
-#buttons button.sampleMute:not(.active) {
+body #buttons button.sampleMute:not(.active) {
   text-decoration: line-through;
 }
-
-#buttons button.active.sampleMute {
+body #buttons button.active.sampleMute {
   text-decoration: underline line-through;
 }
-
-#buttons button.loopMode {
+body #buttons button.loopMode {
   border: 2px dashed;
 }
-
-#buttons button.reverseMode {
+body #buttons button.reverseMode {
   rotate: 180deg;
 }
-
-#buttons button.hideButton {
+body #buttons button.hideButton {
   display: none;
 }
+body #buttons #equal {
+  grid-column: 5/5;
+  grid-row: 5/7;
+}/*# sourceMappingURL=style.css.map */
