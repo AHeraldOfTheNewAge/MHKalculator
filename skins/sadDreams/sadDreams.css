@@ -1,0 +1,20 @@
+body.sadDreams {
+  background-color: #f2eaf5;
+  color: #4a5697;
+}
+body.sadDreams #screen,
+body.sadDreams button {
+  color: #4a5697;
+}
+body.sadDreams #screen {
+  font-size: 1rem;
+  border-color: #f2eaf5;
+}
+body.sadDreams button {
+  border: 2px solid #4a5697;
+  border-radius: 0.3rem;
+  background-color: white;
+}
+body.sadDreams button:disabled {
+  background-color: #e8e8e8;
+}/*# sourceMappingURL=sadDreams.css.map */

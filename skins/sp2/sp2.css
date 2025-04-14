@@ -1,0 +1,58 @@
+@font-face {
+  font-family: "oldd";
+  src: url("OldLondon.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+body.sp2 {
+  background-color: #2f2f2e;
+  font-family: "oldd", sans-serif;
+  color: #812b1a;
+}
+body.sp2 #appTitle {
+  font-size: 1.6rem;
+  padding: 5px;
+}
+body.sp2 #console #screen {
+  /* background-image: url('images/.....jpg');
+  background-size: contain; */
+  /* keeps image fully inside the textarea */
+  /* background-repeat: no-repeat;
+  background-position: top; */
+  /* positions image at the top-left corner */
+  font-family: "oldd", sans-serif;
+  color: #812b1a;
+  font-size: 1.4rem;
+  border-color: #2f2f2e;
+  background-color: #242323;
+}
+body.sp2 #buttons {
+  gap: 6px;
+  padding: 10px;
+}
+body.sp2 #buttons button {
+  font-family: "oldd", sans-serif;
+  background-color: #887752;
+  color: #5e3027;
+  border-radius: 0.5rem;
+  box-shadow: inset 0px 1px 2px rgba(255, 255, 255, 0.4), inset -2px -2px 5px rgba(0, 0, 0, 0.3), 3px 5px 9px rgba(0, 0, 0, 0.5), -1px -1px 3px rgba(255, 255, 255, 0.1);
+}
+body.sp2 #buttons button[id=chopB],
+body.sp2 #buttons button[id=chopE] {
+  background-color: #7f6a3b;
+}
+body.sp2 #buttons button[id=idontknowyetmaybesequence],
+body.sp2 #buttons button[id=minus],
+body.sp2 #buttons button[id=plus] {
+  background-color: #7d6643;
+}
+body.sp2 #buttons button[id=equal] {
+  background-color: #565d4d;
+}
+body.sp2 #buttons button.sampleSlot,
+body.sp2 #buttons button.effectsSlot {
+  background-color: #534e3d;
+}
+body.sp2 #buttons button:disabled {
+  background-color: #59524f;
+}/*# sourceMappingURL=sp2.css.map */
