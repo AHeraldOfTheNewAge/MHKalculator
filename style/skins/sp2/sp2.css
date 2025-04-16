@@ -5,7 +5,7 @@
   font-style: normal;
 }
 body.sp2 {
-  background-color: #2f2f2e;
+  background-color: #30302e;
   font-family: "oldd", sans-serif;
   color: #812b1a;
 }
@@ -23,7 +23,7 @@ body.sp2 #console #screen {
   font-family: "oldd", sans-serif;
   color: #812b1a;
   font-size: 1.4rem;
-  border-color: #2f2f2e;
+  border-color: #30302e;
   background-color: #242323;
 }
 body.sp2 #buttons {
