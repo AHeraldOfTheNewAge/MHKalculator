@@ -8,11 +8,13 @@
 $MAIN_COLOR_BODY_SCREEN: #812b1a;
 $BACKGROUND_COLOR: #2f2f2e;
 $SCREEN_COLOR: #242323;
-$BUTTON_COLOR: #5e3027;
-$BUTTON_COLOR_CHOP: #7f6a3b;
-$BUTTON_COLOR_VOLUMES: #7d6643;
+$BUTTON_COLOR: #000;
+$BUTTON_BG_CHOP: #7f6a3b;
+$BUTTON_BG_VOLUMES: #7d6643;
 $BUTTON_COLOR_EQUAL: #565d4d;
-$BUTTON_COLOR_SAMPLE_FX: #534e3d;
+$BUTTON_BG_SAMPLEANDFX: #534e3d;
+$BUTTON_COLOR_SAMPLE_LOADED: #5e3027;
+$BUTTON_SAMPLE_LOOP_MODE: #977a7a;
 $BUTTON_COLOR_DISABLED: #59524f;
 
 body.sp2 {
@@ -49,20 +51,19 @@ body.sp2 {
 			background-color: #887752;
 			color: $BUTTON_COLOR;
 			border-radius: .5rem;
-			box-shadow: inset 0px 1px 2px rgba(255, 255, 255, 0.4),
-				inset -2px -2px 5px rgba(0, 0, 0, 0.3),
-				3px 5px 9px rgba(0, 0, 0, 0.5),
-				-1px -1px 3px rgba(255, 255, 255, 0.1);
+			box-shadow: inset -1px -1px 2px rgb(163 14 190 / 40%), 
+						inset -5px -3px 5px rgba(0, 0, 0, 0.3), 
+						3px 5px 9px rgb(0 0 0 / 50%), -1px -1px 3px rgb(30 11 11 / 10%);
 
 			&#chopB,
 			&#chopE {
-				background-color: $BUTTON_COLOR_CHOP;
+				background-color: $BUTTON_BG_CHOP;
 			}
 
 			&#idontknowyetmaybesequence,
 			&#minus,
 			&#plus {
-				background-color: $BUTTON_COLOR_VOLUMES;
+				background-color: $BUTTON_BG_VOLUMES;
 			}
 
 			&#equal {
@@ -71,7 +72,15 @@ body.sp2 {
 
 			&.sampleSlot,
 			&.effectsSlot {
-				background-color: $BUTTON_COLOR_SAMPLE_FX;
+				background-color: $BUTTON_BG_SAMPLEANDFX;
+			}
+
+			&.sampleLoaded {
+				color: $BUTTON_COLOR_SAMPLE_LOADED;
+			}
+
+			&.loopMode {
+				border: 2px dashed $BUTTON_SAMPLE_LOOP_MODE;
 			}
 
 			&:disabled {
