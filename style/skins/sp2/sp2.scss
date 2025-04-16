@@ -9,13 +9,14 @@ $MAIN_COLOR_BODY_SCREEN: #812b1a;
 $BACKGROUND_COLOR: #2f2f2e;
 $SCREEN_COLOR: #242323;
 $BUTTON_COLOR: #000;
+$BUTTON_BORDER_COLOR: #120000;
 $BUTTON_BG_CHOP: #7f6a3b;
 $BUTTON_BG_VOLUMES: #7d6643;
 $BUTTON_COLOR_EQUAL: #624141;;
 $BUTTON_BG_SAMPLEANDFX: #534e3d;
 $BUTTON_COLOR_SAMPLE_LOADED: #5e3027;
-$BUTTON_SAMPLE_LOOP_MODE: #977a7a;
-$BUTTON_COLOR_DISABLED: #59524f;
+$BUTTON_SAMPLE_LOOP_MODE: #5e0000;
+$BUTTON_COLOR_DISABLED: #4c4948;
 
 body.sp2 {
 	background-color: $BACKGROUND_COLOR;
@@ -50,10 +51,9 @@ body.sp2 {
 			font-family: 'oldd', sans-serif;
 			background-color: #887752;
 			color: $BUTTON_COLOR;
-			border-radius: .5rem;
-			box-shadow: inset -1px -1px 2px rgb(163 14 190 / 40%), 
-						inset -5px -3px 5px rgba(0, 0, 0, 0.3), 
-						3px 5px 9px rgb(0 0 0 / 50%), -1px -1px 3px rgb(30 11 11 / 10%);
+			border-radius: .7rem;
+			box-shadow: inset -1px -2px 20px 0px rgb(87 24 98 / 40%), inset -5px -3px 5px rgba(0, 0, 0, 0.3), 3px 5px 9px rgba(0, 0, 0, 0.5), -1px -1px 3px rgba(30, 11, 11, 0.1);
+			border-color: $BUTTON_BORDER_COLOR;
 
 			&#chopB,
 			&#chopE {

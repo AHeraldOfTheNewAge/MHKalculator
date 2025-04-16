@@ -34,8 +34,9 @@ body.sp2 #buttons button {
   font-family: "oldd", sans-serif;
   background-color: #887752;
   color: #000;
-  border-radius: 0.5rem;
-  box-shadow: inset -1px -1px 2px rgba(163, 14, 190, 0.4), inset -5px -3px 5px rgba(0, 0, 0, 0.3), 3px 5px 9px rgba(0, 0, 0, 0.5), -1px -1px 3px rgba(30, 11, 11, 0.1);
+  border-radius: 0.7rem;
+  box-shadow: inset -1px -2px 20px 0px rgba(87, 24, 98, 0.4), inset -5px -3px 5px rgba(0, 0, 0, 0.3), 3px 5px 9px rgba(0, 0, 0, 0.5), -1px -1px 3px rgba(30, 11, 11, 0.1);
+  border-color: #120000;
 }
 body.sp2 #buttons button#chopB, body.sp2 #buttons button#chopE {
   background-color: #7f6a3b;
@@ -53,8 +54,8 @@ body.sp2 #buttons button.sampleLoaded {
   color: #5e3027;
 }
 body.sp2 #buttons button.loopMode {
-  border: 2px dashed #977a7a;
+  border: 2px dashed #5e0000;
 }
 body.sp2 #buttons button:disabled {
-  background-color: #59524f !important;
+  background-color: #4c4948 !important;
 }/*# sourceMappingURL=sp2.css.map */
