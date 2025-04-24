@@ -110,6 +110,29 @@ function copySample(slotId, sourceSlot) {
   reader.readAsArrayBuffer(file); // Read file
 }
 
+function copySampleN(sourceSlotId, destinationSlotId) { //TODO
+  sourcePlayerBuffer = sampleSlots[sourceSlotId].player.buffer;
+
+  const newBuffer = Tone.context.createBuffer( // Create a new AudioBuffer with the same specifications
+    sourcePlayerBuffer.numberOfChannels,
+    sourcePlayerBuffer.length,
+    sourcePlayerBuffer.sampleRate
+  );
+
+  for (let channel = 0; channel < sourcePlayerBuffer.numberOfChannels; channel++) { // Copy the audio data channel by channel
+    const channelData = sourcePlayerBuffer.getChannelData(channel); // Get the channel data
+
+    newBuffer.copyToChannel(channelData, channel); // Copy it to the new buffer
+  }
+
+  sampleSlots[destinationSlotId].player.buffer = newBuffer;
+
+  $(`#s${destinationSlotId}`).addClass('sampleLoaded');
+
+  pushToScreen(`Copied sample from slot ${decToHex(sourceSlotId)} to slot ${decToHex(destinationSlotId)}`);
+  resetToPlayMode(); // Go back to PLAY! //TODO -> This may fail!
+}
+
 function resetToPlayMode() {
   changeMainMode('PLAY');
 
