@@ -74,15 +74,9 @@ function getSampleOrFxButtonId(target) {
   return target.id.replace('s', '').replace('f', '');
 };
 
-function copySample(slotId, sourceSlot) {
-  if (!sourceSlot) { // The case when we load a new sample on current sample slot
-    sourceSlot = slotId;
-  } else { // When we copy from another slot, we must copy from it's file source, this fixes the case when we copy from an allready copied slot
-    sourceSlot = sampleSlots[sourceSlot].fileSource;
-  }
-
+function loadSample(slotId) {
   var sampleSlot = sampleSlots[slotId];
-  var file = $(`#fs${sourceSlot}`)[0].files[0]; // Get selected file
+  var file = $(`#fs${slotId}`)[0].files[0]; // Get selected file
 
   if (!file) { //?????????
     pushToScreen('Something failed!');
@@ -99,7 +93,6 @@ function copySample(slotId, sourceSlot) {
 
     sampleSlot.player.buffer = new Tone.ToneAudioBuffer(audioBuffer); // Assign to Tone.Player
     sampleSlot.fileName = file.name;
-    sampleSlot.fileSource = sourceSlot; // The file input where we uploaded the sample
 
     $(`#s${slotId}`).addClass('sampleLoaded');
     pushToScreen(`Sample ${sampleSlot.fileName} loaded on slot ${decToHex(slotId)} (${sampleSlot.player.buffer.duration.toFixed(2)}s)`);
@@ -110,7 +103,7 @@ function copySample(slotId, sourceSlot) {
   reader.readAsArrayBuffer(file); // Read file
 }
 
-function copySampleN(sourceSlotId, destinationSlotId) { //TODO
+function copySample(sourceSlotId, destinationSlotId) {
   sourcePlayerBuffer = sampleSlots[sourceSlotId].player.buffer;
 
   const newBuffer = Tone.context.createBuffer( // Create a new AudioBuffer with the same specifications
@@ -126,6 +119,7 @@ function copySampleN(sourceSlotId, destinationSlotId) { //TODO
   }
 
   sampleSlots[destinationSlotId].player.buffer = newBuffer;
+  sampleSlots[destinationSlotId].fileName = sampleSlots[sourceSlotId].fileName;
 
   $(`#s${destinationSlotId}`).addClass('sampleLoaded');
 
@@ -154,7 +148,6 @@ function initSampleButton(slotId) {
     fileName: '????',
     playMode: 'NORMAL', // PlayModes are NORMAL, LOOP, REVERSE, REVERSELOOP, we cycle trough them!
     link: undefined, // If linked, playing this sample will trigger the linked sample as well(also stopping)
-    fileSource: undefined,// Marks the fileInput where we uploaded the sample
   };
 
   sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future?
@@ -166,7 +159,7 @@ function initSampleButton(slotId) {
   $(`#fs${slotId}`).on("change", function(evt) { // In file we keep the samples!
     var slotId = getSampleOrFxButtonId(evt.target);
 
-    copySample(slotId);
+    loadSample(slotId);
   });
 }
 
@@ -758,8 +751,7 @@ $(function() {
         return;
       }
 
-      pushToScreen('Copied sample from ' + decToHex(slotId) + ' to ' + decToHex(mainModeAndParams.initiator) + '!');
-      copySample(mainModeAndParams.initiator, slotId);
+      copySample(slotId, mainModeAndParams.initiator);
 
       return;
     }
@@ -786,7 +778,6 @@ $(function() {
       sampleSlot.player.stop(); // Stop the sample(in case it is playing!) This also removes the playing class(because the callback is triggered on stop!)
 
       sampleSlot.fileName = ''; // No longer a file name on this slot
-      sampleSlot.fileSource = undefined; // No longer a source!
 
       if (typeof sampleSlot.link != 'undefined') { // If this sample slot was linked as source to another sampleslot we remove the link
         $(`#s${slotId}`).text(decToHex(slotId)); // Get back to original text
