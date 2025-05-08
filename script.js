@@ -47,6 +47,10 @@ function disableButtonsBySituation(buttonId) { // Add class active!?
   $('button:not("#equal, .effectsSlot")').attr('disabled', true); // Disable everything, not equal and effects slots!
   $(`#${buttonId}`).removeAttr('disabled'); // Enable the source button
 
+  if (buttonId == 'clr' && !mainModeAndParams.recording.mutex && mainModeAndParams.recording.state == 2) {
+    $('#rec').removeAttr('disabled'); // Enable rec button, so we can clear it if user wants!
+  }
+
   if (buttonId == 'plus' || buttonId == 'playbackrate') { // Reenable plus and minus buttons, needed for volume or sample play speed!
     $('#minus, #plus, #changeConst').removeAttr('disabled');
   }
@@ -262,6 +266,8 @@ async function startRecording() { //TODO -> MUTEX?
   mainModeAndParams.recording.state = 1;
   mainModeAndParams.recording.mutex = false; // Release the mutex!
 
+  $('#rec').html("STP");
+
   pushToScreen('Started recording!');
 }
 
@@ -282,6 +288,13 @@ async function stopRecording() {///TODO -> Mutex?
 
   mainModeAndParams.recording.player = new Tone.Player({ url: mainModeAndParams.recording.url }).toDestination();
 
+  mainModeAndParams.recording.player.onstop = (e) => { //TODO -> PAUSE ON = TOO
+    $('#rec').html("PLY");
+    $('#rec').removeClass('playing');
+
+    pushToScreen('Stopped playing the recording!');
+  };
+
   // Create a download link for the recording
   // Hold this for export!?
   // const url = URL.createObjectURL(recording);
@@ -293,7 +306,36 @@ async function stopRecording() {///TODO -> Mutex?
   mainModeAndParams.recording.state = 2;
   mainModeAndParams.recording.mutex = false; // Release the mutex!
 
+  $('#rec').addClass('sampleLoaded');
+  $('#rec').html("PLY");
   pushToScreen('Stopped recording!');
+}
+
+async function stopAndDisposeRecording() {
+  mainModeAndParams.recording.mutex = true;
+
+  if (typeof mainModeAndParams.recording.player != 'undefined') {
+    mainModeAndParams.recording.player.stop();
+    mainModeAndParams.recording.player.dispose();
+  }
+
+  if (recorder.state == "started") {
+    await recorder.stop();
+  }
+
+  recorder.dispose();
+
+  recorder = undefined;
+
+  mainModeAndParams.recording = { // Back to square 1(0 lol)
+    state: 0,
+    mutex: false,
+    url: undefined,
+    player: undefined
+  };
+
+  $('#rec').removeClass('playing sampleLoaded');
+  $('#rec').html('REC');
 }
 
 function playPauseRecording() {
@@ -312,10 +354,11 @@ function playPauseRecording() {
 
   if (mainModeAndParams.recording.player.state == 'started') { // Recording is playing, stop it!
     mainModeAndParams.recording.player.stop();
-
-    pushToScreen('Stopped playing the recording!');
   } else { // Start playing the recording!
     mainModeAndParams.recording.player.start();
+
+    $('#rec').html("STP");
+    $('#rec').addClass('playing');
 
     pushToScreen('Started playing the recording!');
   }
@@ -542,6 +585,12 @@ $(function() {
     }
 
     if (evt.target.id == 'rec') {
+      if (mainModeAndParams.mode == 'CLR') {
+        stopAndDisposeRecording();
+
+        return;
+      }
+
       if (!mainModeAndParams.recording.state) { // Recording not yet started!
         startRecording();
 
