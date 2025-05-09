@@ -40,14 +40,17 @@ function decToHex(slotId) {
 }
 
 function disableButtonsBySituation(buttonId) { // Add class active!?
+  var wasSampleSlotClicked = false;
+
   if (parseInt(buttonId) == buttonId) {
+    wasSampleSlotClicked = true;
     buttonId = 's' + buttonId;
   }
 
   $('button:not("#equal, .effectsSlot")').attr('disabled', true); // Disable everything, not equal and effects slots!
   $(`#${buttonId}`).removeAttr('disabled'); // Enable the source button
 
-  if (buttonId == 'clr' && !mainModeAndParams.recording.mutex && mainModeAndParams.recording.state == 2) {
+  if ((buttonId == 'clr' || wasSampleSlotClicked) && isRecordingOperational()) {
     $('#rec').removeAttr('disabled'); // Enable rec button, so we can clear it if user wants!
   }
 
@@ -108,7 +111,13 @@ function loadSample(slotId) {
 }
 
 function copySample(sourceSlotId, destinationSlotId) {
-  sourcePlayerBuffer = sampleSlots[sourceSlotId].player.buffer;
+  var sourcePlayerBuffer;
+
+  if (sourceSlotId == 'rec') { // Copy from recording
+    sourcePlayerBuffer = mainModeAndParams.recording.player.buffer;
+  } else {
+    sourcePlayerBuffer = sampleSlots[sourceSlotId].player.buffer;
+  }
 
   const newBuffer = Tone.context.createBuffer( // Create a new AudioBuffer with the same specifications
     sourcePlayerBuffer.numberOfChannels,
@@ -123,11 +132,17 @@ function copySample(sourceSlotId, destinationSlotId) {
   }
 
   sampleSlots[destinationSlotId].player.buffer = newBuffer;
-  sampleSlots[destinationSlotId].fileName = sampleSlots[sourceSlotId].fileName;
+  sampleSlots[destinationSlotId].fileName = sourceSlotId == 'rec' ? 'REC ' + (new Date()).toISOString() : sampleSlots[sourceSlotId].fileName;
 
   $(`#s${destinationSlotId}`).addClass('sampleLoaded');
 
-  pushToScreen(`Copied sample from slot ${decToHex(sourceSlotId)} to slot ${decToHex(destinationSlotId)}`);
+  var sourceForSampleStr = 'recording';
+
+  if (sourceSlotId != 'rec') {
+    sourceForSampleStr = `slot ${decToHex(sourceSlotId)}`;
+  }
+
+  pushToScreen(`Copied sample from ${sourceForSampleStr} to slot ${decToHex(destinationSlotId)}`);
   resetToPlayMode(); // Go back to PLAY! //TODO -> This may fail!
 }
 
@@ -246,6 +261,13 @@ function toggleSample(slotId, sourceSlotId) {
   playSample(slotId, sourceSlotId);
 }
 
+function isRecordingOperational() {
+  if (mainModeAndParams.recording.mutex || mainModeAndParams.recording.state != 2) {
+    return false;
+  }
+
+  return true;
+}
 /**
  * Start recording(everything)
  */
@@ -587,6 +609,16 @@ $(function() {
     if (evt.target.id == 'rec') {
       if (mainModeAndParams.mode == 'CLR') {
         stopAndDisposeRecording();
+
+        return;
+      }
+
+      if (mainModeAndParams.mode == 'LOADINGSAMPLE') {
+        if (!isRecordingOperational()) { //TODO -> PUSH SOMETHING TO SCREEN!?
+          return;
+        }
+
+        copySample('rec', mainModeAndParams.initiator);
 
         return;
       }
