@@ -54,7 +54,7 @@ function disableButtonsBySituation(buttonId) { // Add class active!?
     $('#rec').removeAttr('disabled'); // Enable rec button, so we can clear it if user wants!
   }
 
-  if (buttonId == 'plus' || buttonId == 'playbackrate') { // Reenable plus and minus buttons, needed for volume or sample play speed!
+  if (buttonId == 'plus' || buttonId == 'playbackrate' || buttonId == 'chopB' || buttonId == 'chopE') { // Reenable plus and minus buttons, needed for volume, sample play speed, chop
     $('#minus, #plus, #changeConst').removeAttr('disabled');
   }
 
@@ -167,6 +167,10 @@ function initSampleButton(slotId) {
     fileName: '????',
     playMode: 'NORMAL', // PlayModes are NORMAL, LOOP, REVERSE, REVERSELOOP, we cycle trough them!
     link: undefined, // If linked, playing this sample will trigger the linked sample as well(also stopping)
+    chops: {
+      begin: undefined,
+      end: undefined
+    }
   };
 
   sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future?
@@ -492,6 +496,8 @@ $(function() {
   pushToScreen('MHKalculator operational..'); // Initial message
 
   $('button').on('click', async (evt) => {
+    console.log(evt);
+
     if (evt.target.id == 'equal') {
       if (mainModeAndParams.mode == 'PLAY') { // Rotate equal, it looks like stop button! Stop everything from playing!
         for (var i = 0; i <= 15; i++) {
@@ -659,6 +665,25 @@ $(function() {
       return;
     }
 
+    if (evt.target.id == 'chopB') {
+      if (mainModeAndParams.mode == 'PLAY') {
+        pushToScreen("Chop sample from the begining!");
+        changeMainMode('chopB');
+
+        $('#chopB').addClass('active');
+
+        disableButtonsBySituation('chopB');
+
+        return;
+      }
+
+      pushToScreen('Cancelled sample mode change');
+
+      resetToPlayMode();
+
+      return;
+    }
+
     if (evt.target.id == 'minus' && (mainModeAndParams.mode == 'PLAY' || mainModeAndParams.mode == 'MUTE')) {
       if (mainModeAndParams.mode == 'PLAY') {
         changeMainMode('MUTE');
@@ -716,6 +741,50 @@ $(function() {
         sampleSlots[mainModeAndParams.initiator].player.playbackRate = sampleSlotPlaybackRate;
 
         pushToScreen(`Slot ${decToHex(mainModeAndParams.initiator)} speed adjusted to ${sampleSlotPlaybackRate.toFixed(2)}`); //TODO -> Make more comprehensive
+
+        return;
+      }
+
+      if (mainModeAndParams.mode == 'chopB' || mainModeAndParams.mode == 'chopE') {
+        if (!mainModeAndParams.initiator) {
+          pushToScreen("Select a slot to chop!");
+
+          return;
+        }
+
+        var sampleSlotToChop = sampleSlots[mainModeAndParams.initiator];
+        var sampleSlotDuration = sampleSlotToChop.player.buffer.duration;
+
+        if (mainModeAndParams.mode == 'chopB') { // Chop from the begining
+          var toChop = sampleSlotToChop.chops.begin;
+
+          if (typeof toChop == 'undefined') {
+            toChop = 0;
+          }
+
+          if (evt.target.id == 'minus') { //TODO -> Explain
+            if (typeof sampleSlotToChop.chops.begin == 'undefined') {
+              pushToScreen('Cannot chop before the begining');
+
+              return;
+            }
+
+            return;
+          }
+
+          if (toChop + mainModeAndParams.unit > sampleSlotDuration) {
+
+            return;
+          }
+
+          // Plus //TODO -> Explain
+          console.log(sampleSlotToChop, sampleSlotDuration, 'pbd');
+          console.log('choppp???');
+
+          return;
+        }
+
+        // Chop from the end!
 
         return;
       }
@@ -926,8 +995,9 @@ $(function() {
       if (!mainModeAndParams.initiator) { // Source of link
         mainModeAndParams.initiator = slotId;
 
-        pushToScreen('Slot ' + decToHex(slotId) + ' will be link source! Choose a sample to trigger!');
         $(`#s${slotId}`).addClass('active'); // So it's marked as selected!
+
+        pushToScreen('Slot ' + decToHex(slotId) + ' will be link source! Choose a sample to trigger!');
 
         return;
       }
@@ -998,6 +1068,38 @@ $(function() {
 
           break;
       }
+
+      return;
+    }
+
+    if (mainModeAndParams.mode == 'chopB') { // Chop the begining of a sample
+      if (!sampleSlot.player.loaded) {
+        pushToScreen('Cannot chop on an empty slot!');
+
+        return;
+      }
+
+      if (mainModeAndParams.initiator) {
+        if (mainModeAndParams.initiator != slotId) {
+          pushToScreen('There is allready a slot selected for chopping!');
+
+          return;
+        }
+
+        mainModeAndParams.initiator = undefined;
+
+        $(`#s${slotId}`).removeClass('active'); // Unselect
+
+        pushToScreen('Slot ' + decToHex(slotId) + ' unselected for chopping from the begining!');
+
+        return;
+      }
+
+      mainModeAndParams.initiator = slotId;
+
+      $(`#s${slotId}`).addClass('active'); // So it's marked as selected!
+
+      pushToScreen('Slot ' + decToHex(slotId) + ' selected for chopping from the begining!');
 
       return;
     }
