@@ -174,6 +174,10 @@ function initSampleButton(slotId) {
   };
 
   sampleSlots[slotId].player.onstop = (e) => { //TODO -> Move this in the future?
+    if (mainModeAndParams.mode == 'chopB' || mainModeAndParams.mode == 'chopE') { // When chopping do not show messages and also keep the plaing class
+      return;
+    }
+
     $(`#s${slotId}`).removeClass('playing');
 
     pushToScreen('Stop ' + decToHex(slotId));
@@ -193,7 +197,7 @@ function initSampleButton(slotId) {
  * @param {integer} sourceSlotId if linked whe know who started the chain basically! Helpful to not trigger again if it's the starter of a chain
  * @returns 
  */
-function playSample(slotId, sourceSlotId) {
+function playSample(slotId, sourceSlotId, isChopping) {
   if (slotId == sourceSlotId) { // If this sample slot triggers a link that will eventually trigger back this link, this avoids the infinite loop
     return;
   }
@@ -202,9 +206,17 @@ function playSample(slotId, sourceSlotId) {
 
   // Sample is not playing, try to play it!
   // if (sampleSlot.player.buffer) {} //TODO -> In the past if the buffer was not existent, we emptied the slot
-  sampleSlot.player.start();
+  if (typeof sampleSlot.chops.begin == 'undefined' && typeof sampleSlot.chops.end == 'undefined') {
+    sampleSlot.player.start();
+  } else {
+    sampleSlot.player.start(undefined, sampleSlot.chops.begin, sampleSlot.chops.end);
+  }
 
   $(`#s${slotId}`).addClass('playing');
+
+  if (isChopping) { // When chopping we do not trigger linked slots
+    return;
+  }
 
   pushToScreen(`Play ${sampleSlot.fileName} on slot ` + decToHex(slotId));
 
@@ -226,7 +238,7 @@ function playSample(slotId, sourceSlotId) {
  * @param {integer} sourceSlotId if linked whe know who started the chain basically! Helpful to not trigger again if it's the starter of a chain
  * @returns 
  */
-function stopSample(slotId, sourceSlotId) {
+function stopSample(slotId, sourceSlotId, isChopping) {
   if (slotId == sourceSlotId) { // If this sample slot triggers a link that will eventually trigger back this link, this avoids the infinite loop
     return;
   }
@@ -234,6 +246,10 @@ function stopSample(slotId, sourceSlotId) {
   var sampleSlot = sampleSlots[slotId];
 
   sampleSlot.player.stop();
+
+  if (isChopping) { // When chopping we do not trigger linked slots
+    return;
+  }
 
   if (typeof sampleSlot.link == 'undefined') {
     return;
@@ -496,8 +512,6 @@ $(function() {
   pushToScreen('MHKalculator operational..'); // Initial message
 
   $('button').on('click', async (evt) => {
-    console.log(evt);
-
     if (evt.target.id == 'equal') {
       if (mainModeAndParams.mode == 'PLAY') { // Rotate equal, it looks like stop button! Stop everything from playing!
         for (var i = 0; i <= 15; i++) {
@@ -752,34 +766,36 @@ $(function() {
           return;
         }
 
+        stopSample(mainModeAndParams.initiator, undefined, true); // Stop playing the sample, so we can listen when we 
+
         var sampleSlotToChop = sampleSlots[mainModeAndParams.initiator];
         var sampleSlotDuration = sampleSlotToChop.player.buffer.duration;
 
         if (mainModeAndParams.mode == 'chopB') { // Chop from the begining
-          var toChop = sampleSlotToChop.chops.begin;
-
-          if (typeof toChop == 'undefined') {
-            toChop = 0;
-          }
+          var toChop = (typeof sampleSlotToChop.chops.begin == 'undefined') ? 0 : sampleSlotToChop.chops.begin;
 
           if (evt.target.id == 'minus') { //TODO -> Explain
-            if (typeof sampleSlotToChop.chops.begin == 'undefined') {
+            if (!toChop || toChop - mainModeAndParams.unit <= 0) {
               pushToScreen('Cannot chop before the begining');
 
               return;
             }
 
-            return;
+            sampleSlotToChop.chops.begin = toChop - mainModeAndParams.unit; // Update starting point for playing
+          } else {// Plus //TODO -> Explain
+            if (toChop + mainModeAndParams.unit > sampleSlotDuration) {
+              pushToScreen('Cannot chop past the duration of the sample');
+
+              return;
+            }
+
+            sampleSlotToChop.chops.begin = toChop + mainModeAndParams.unit; // Update starting point for playing
           }
 
-          if (toChop + mainModeAndParams.unit > sampleSlotDuration) {
-
-            return;
-          }
-
-          // Plus //TODO -> Explain
-          console.log(sampleSlotToChop, sampleSlotDuration, 'pbd');
-          console.log('choppp???');
+          setTimeout(() => { // Add a little delay before we play the sample, so it's more clear where the chop starts! 0.6 secs delay
+            pushToScreen(`Sample ${decToHex(mainModeAndParams.initiator)} chopped start to ${sampleSlotToChop.chops.begin.toFixed(2)}s`);
+            playSample(mainModeAndParams.initiator, undefined, true);
+          }, 600);
 
           return;
         }
