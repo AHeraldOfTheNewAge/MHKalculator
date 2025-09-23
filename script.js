@@ -62,8 +62,8 @@ function disableButtonsBySituation(buttonId) { // Add class active!?
     $('#changeConst').removeAttr('disabled'); // Enable change const on effects
 
     // Hide sample buttons and show effects buttons
-    $('.effectsSlot').removeClass('hideButton');
-    $('.sampleSlot').addClass('hideButton');
+    $('.page2Button, .effectsSlot').removeClass('hideButton');
+    $('.page1Button, .sampleSlot').addClass('hideButton');
 
     return;
   }
@@ -75,6 +75,21 @@ function disableButtonsBySituation(buttonId) { // Add class active!?
 
     $(`#s${slotId}`).removeAttr('disabled');
   });
+}
+
+function resetToPlayMode() {
+  changeMainMode('PLAY');
+
+  mainModeAndParams.initiator = undefined;
+
+  $('button').removeAttr('disabled');
+  $('button').removeClass('active');
+
+  // Hide effects buttons and show sample buttons
+  $('.page1Button, .sampleSlot').removeClass('hideButton');
+  $('.page2Button, .effectsSlot').addClass('hideButton');
+
+  // pushToScreen('Back to play mode!'); //??
 }
 
 function getSampleOrFxButtonId(target) {
@@ -146,20 +161,6 @@ function copySample(sourceSlotId, destinationSlotId) {
   resetToPlayMode(); // Go back to PLAY! //TODO -> This may fail!
 }
 
-function resetToPlayMode() {
-  changeMainMode('PLAY');
-
-  mainModeAndParams.initiator = undefined;
-
-  $('button').removeAttr('disabled');
-  $('button').removeClass('active');
-
-  // Hide effects buttons and show sample buttons
-  $('.sampleSlot').removeClass('hideButton');
-  $('.effectsSlot').addClass('hideButton');
-
-  // pushToScreen('Back to play mode!'); //??
-}
 
 function initSampleButton(slotId) {
   sampleSlots[slotId] = {
