@@ -896,8 +896,18 @@ $(function() {
           sampleSlots[i].player.disconnect(Tone.Destination); // Disconnect from master
         }
 
-        $(`#f${slotId}`).addClass('playing');
-        $('.fxParam').removeAttr('disabled');
+        var effectParams = effectObj.fx.get();
+        var effectParamsNames = Object.keys(effectParams);
+
+        effectParamsNames.forEach((effectParamName, i) => { // Enable param changing buttons
+          if (i > 4) { // Max 5 parameters we can have per effect
+            return;
+          }
+
+          $(`#fp${i}`).removeAttr('disabled');
+        });
+
+        $(`#f${slotId}`).addClass('sampleLoaded playing');
 
         pushToScreen(`Enabled ${effectName} on slot F` + decToHex(slotId));
 
@@ -917,7 +927,7 @@ $(function() {
 
       mainModeAndParams.fx = undefined;
 
-      $(`#f${slotId}`).removeClass('playing');
+      $(`#f${slotId}`).removeClass('sampleLoaded playing');
       $('.fxParam').attr('disabled', true);
 
       pushToScreen(`Disabled ${effectName} on slot F` + decToHex(slotId));

@@ -32,22 +32,22 @@ body.sp2 #buttons {
 }
 body.sp2 #buttons button {
   font-family: "oldd", sans-serif;
-  background-color: #887752;
+  background-color: #625a41;
   color: #000;
-  border-radius: 0.5rem;
+  border-radius: 0.8rem;
   border-color: #000;
 }
 body.sp2 #buttons button#chopB, body.sp2 #buttons button#chopE {
-  background-color: #b49652;
+  background-color: #416257;
 }
 body.sp2 #buttons button#minus, body.sp2 #buttons button#plus {
-  background-color: #61373c;
+  background-color: #4a4162;
 }
 body.sp2 #buttons button#equal {
   background-color: #624141;
 }
 body.sp2 #buttons button.sampleSlot, body.sp2 #buttons button.effectsSlot {
-  background-color: #375359;
+  background-color: #415162;
 }
 body.sp2 #buttons button.sampleLoaded {
   color: #5e3027;
