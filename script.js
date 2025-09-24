@@ -40,6 +40,8 @@ function decToHex(slotId) {
 }
 
 function disableButtonsBySituation(buttonId) { // Add class active!?
+  console.log(buttonId);
+
   var wasSampleSlotClicked = false;
 
   if (parseInt(buttonId) == buttonId) {
@@ -62,7 +64,7 @@ function disableButtonsBySituation(buttonId) { // Add class active!?
     $('#changeConst').removeAttr('disabled'); // Enable change const on effects
 
     // Hide sample buttons and show effects buttons
-    $('.page2Button, .effectsSlot').removeClass('hideButton');
+    $('.fxParam, .effectsSlot').removeClass('hideButton');
     $('.page1Button, .sampleSlot').addClass('hideButton');
 
     return;
@@ -87,7 +89,7 @@ function resetToPlayMode() {
 
   // Hide effects buttons and show sample buttons
   $('.page1Button, .sampleSlot').removeClass('hideButton');
-  $('.page2Button, .effectsSlot').addClass('hideButton');
+  $('.fxParam, .effectsSlot').addClass('hideButton');
 
   // pushToScreen('Back to play mode!'); //??
 }
@@ -421,89 +423,135 @@ $(function() {
 
     switch (i) {
       case 0: // Distortion
-        effects[i] = new Tone.Distortion({ distortion: 0.4, wet: 1 }).toDestination();
+        effects[i] = {
+          name: 'Distortion',
+          fx: new Tone.Distortion({ distortion: 0.4, wet: 1 }).toDestination()
+        };
 
         break;
       case 1: // Feedback delay
-        effects[i] = new Tone.FeedbackDelay({ delayTime: 0.25, feedback: 0.2, wet: 0.8 }).toDestination();
+        effects[i] = {
+          name: 'Feedback delay',
+          fx: new Tone.FeedbackDelay({ delayTime: 0.25, feedback: 0.2, wet: 0.8 }).toDestination()
+        };
 
         break;
       case 2: // Chorus
-        effects[i] = new Tone.Chorus({ frequency: 4, depth: 0.6, wet: 0.8 }).toDestination();
+        effects[i] = {
+          name: 'Chorus',
+          fx: new Tone.Chorus({ frequency: 4, depth: 0.6, wet: 0.8 }).toDestination()
+        };
 
         break;
       case 3: // BitCrusher
-        effects[i] = new Tone.BitCrusher({
-          bits: 8,       // Reduce bit depth (lower = more crunchy, range 1-16)
-          wet: 0.8       // Blend with original signal (0 = dry, 1 = full effect)
-        }).toDestination();
+        effects[i] = {
+          name: 'BitCrusher',
+          fx: new Tone.BitCrusher({
+            bits: 8,       // Reduce bit depth (lower = more crunchy, range 1-16)
+            wet: 0.8       // Blend with original signal (0 = dry, 1 = full effect)
+          }).toDestination()
+        };
 
         break;
       case 4: // High pass filter
-        effects[i] = new Tone.Filter({
-          type: "highpass",
-          frequency: 1000, // Set the cutoff frequency (in Hz)
-          rolloff: -12,    // Filter slope (dB/octave): -12, -24, -48, or -96
-          Q: 1             // Q factor (resonance)
-        }).toDestination();
+        effects[i] = {
+          name: 'High pass filter',
+          fx: new Tone.Filter({
+            type: "highpass",
+            frequency: 1000, // Set the cutoff frequency (in Hz)
+            rolloff: -12,    // Filter slope (dB/octave): -12, -24, -48, or -96
+            Q: 1             // Q factor (resonance)
+          }).toDestination()
+        };
 
         break;
 
       case 5: // Low pass filter
-        effects[i] = new Tone.Filter({
-          type: "lowpass",
-          frequency: 2000,   // Try 1000-3000 Hz
-          rolloff: -24,
-          Q: 1
-        }).toDestination();
+        effects[i] = {
+          name: 'Low pass filter',
+          fx: new Tone.Filter({
+            type: "lowpass",
+            frequency: 2000,   // Try 1000-3000 Hz
+            rolloff: -24,
+            Q: 1
+          }).toDestination()
+        };
 
         break;
       case 6: // Vibrato
-        effects[i] = new Tone.Vibrato({
-          frequency: 5,      // Speed of vibrato
-          depth: 0.1,        // Amount of pitch variation
-          wet: 0.5           // Mix with dry signal
-        }).toDestination();
+        effects[i] = {
+          name: 'Vibrato',
+          fx: new Tone.Vibrato({
+            frequency: 5,      // Speed of vibrato
+            depth: 0.1,        // Amount of pitch variation
+            wet: 0.5           // Mix with dry signal
+          }).toDestination()
+        };
 
         break;
       case 7: // Reverb
-        effects[i] = new Tone.Reverb({
-          decay: 2,          // Around 1.5-3 seconds works well
-          wet: 0.4           // Keep subtle for lofi
-        }).toDestination();
+        effects[i] = {
+          name: 'Reverb',
+          fx: new Tone.Reverb({
+            decay: 2,          // Around 1.5-3 seconds works well
+            wet: 0.4           // Keep subtle for lofi
+          }).toDestination()
+        };
 
         break;
       case 8: // Compressor
-        effects[i] = new Tone.Compressor({
-          threshold: -24,    // Lower threshold catches more of the signal
-          ratio: 4,          // Moderate compression ratio
-          attack: 0.003,     // Fast attack to preserve transients
-          release: 0.25      // Medium release for natural decay
-        }).toDestination();
+        effects[i] = {
+          name: 'Compressor',
+          fx: new Tone.Compressor({
+            threshold: -24,    // Lower threshold catches more of the signal
+            ratio: 4,          // Moderate compression ratio
+            attack: 0.003,     // Fast attack to preserve transients
+            release: 0.25      // Medium release for natural decay
+          }).toDestination()
+        };
 
         break;
       case 9: // Phaser
-        effects[i] = new Tone.Phaser({
-          frequency: 0.5,    // Slow movement
-          octaves: 3,        // Range of the effect
-          baseFrequency: 300,// Starting frequency
-          wet: 0.2           // Keep subtle
-        }).toDestination();
+        effects[i] = {
+          name: 'Phaser',
+          fx: new Tone.Phaser({
+            frequency: 0.5,    // Slow movement
+            octaves: 3,        // Range of the effect
+            baseFrequency: 300,// Starting frequency
+            wet: 0.2           // Keep subtle
+          }).toDestination()
+        };
 
         break;
       case 10: // Chebyshev
-        effects[i] = new Tone.Chebyshev({
-          order: 4,          // Try 2-5 for subtle harmonics
-          wet: 0.2
-        }).toDestination();
+        effects[i] = {
+          name: 'Chebyshev',
+          fx: new Tone.Chebyshev({
+            order: 4,          // Try 2-5 for subtle harmonics
+            wet: 0.2
+          }).toDestination()
+        };
 
         break;
       case 11: // Limiter - To prevent clipping while maximizing volume??
-        effects[i] = new Tone.Limiter(-0.5).toDestination();
+        effects[i] = {
+          name: 'Limiter',
+          fx: new Tone.Limiter(-0.5).toDestination()
+        };
+
+        break;
+      case 15:  // Mute
+        effects[i] = {
+          name: 'Mute',
+          fx: new Tone.Gain(0).toDestination()
+        };
 
         break;
       default: // Distortion is default!?
-        effects[i] = new Tone.Distortion({ distortion: 0.8, wet: 0.8 }).toDestination();
+        effects[i] = {
+          name: 'Distortion again!?',
+          fx: new Tone.Distortion({ distortion: 0.8, wet: 0.8 }).toDestination()
+        };
 
         break;
     }
@@ -609,7 +657,7 @@ $(function() {
       return;
     }
 
-    if (evt.target.id == 'fx') { // Master effects!
+    if (evt.target.id == 'fx') {
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen('Effects');
         changeMainMode('FX');
@@ -837,22 +885,19 @@ $(function() {
     var slotId = getSampleOrFxButtonId(evt.target);
 
     if ($(evt.target).hasClass('effectsSlot')) {
-      var effect = effects[slotId];
-      var effectName = effect.name;
-
-      if (effectName == 'Filter') {
-        effectName = effect.type + ' filter';
-      }
+      var effectObj = effects[slotId];
+      var effectName = effectObj.name;
 
       if (typeof mainModeAndParams.fx == 'undefined') { // No effect connected yet
         mainModeAndParams.fx = slotId; // Mark this effect connected!
 
         for (var i = 0; i <= 15; i++) { // Connect all sampleSlots to this effect
-          sampleSlots[i].player.connect(effect); // Connect to the effect
+          sampleSlots[i].player.connect(effectObj.fx); // Connect to the effect
           sampleSlots[i].player.disconnect(Tone.Destination); // Disconnect from master
         }
 
         $(`#f${slotId}`).addClass('playing');
+        $('.fxParam').removeAttr('disabled');
 
         pushToScreen(`Enabled ${effectName} on slot F` + decToHex(slotId));
 
@@ -867,12 +912,13 @@ $(function() {
 
       for (var i = 0; i <= 15; i++) { // Disconnect all sampleSlots from this effect
         sampleSlots[i].player.toDestination(); // Connect all sampleslots to master
-        sampleSlots[i].player.disconnect(effect); // Disconnect the effect
+        sampleSlots[i].player.disconnect(effectObj.fx); // Disconnect the effect
       }
 
-      $(`#f${slotId}`).removeClass('playing');
-
       mainModeAndParams.fx = undefined;
+
+      $(`#f${slotId}`).removeClass('playing');
+      $('.fxParam').attr('disabled', true);
 
       pushToScreen(`Disabled ${effectName} on slot F` + decToHex(slotId));
 
