@@ -425,6 +425,7 @@ $(function() {
       case 0: // Distortion
         effects[i] = {
           name: 'Distortion',
+          skip: ['oversample'],
           fx: new Tone.Distortion({ distortion: 0.4, wet: 1 }).toDestination()
         };
 
@@ -432,6 +433,7 @@ $(function() {
       case 1: // Feedback delay
         effects[i] = {
           name: 'Feedback delay',
+          skip: [],
           fx: new Tone.FeedbackDelay({ delayTime: 0.25, feedback: 0.2, wet: 0.8 }).toDestination()
         };
 
@@ -439,6 +441,7 @@ $(function() {
       case 2: // Chorus
         effects[i] = {
           name: 'Chorus',
+          skip: ['type', 'spread'],
           fx: new Tone.Chorus({ frequency: 4, depth: 0.6, wet: 0.8 }).toDestination()
         };
 
@@ -446,6 +449,7 @@ $(function() {
       case 3: // BitCrusher
         effects[i] = {
           name: 'BitCrusher',
+          skip: [],
           fx: new Tone.BitCrusher({
             bits: 8,       // Reduce bit depth (lower = more crunchy, range 1-16)
             wet: 0.8       // Blend with original signal (0 = dry, 1 = full effect)
@@ -456,6 +460,7 @@ $(function() {
       case 4: // High pass filter
         effects[i] = {
           name: 'High pass filter',
+          skip: ['type'],
           fx: new Tone.Filter({
             type: "highpass",
             frequency: 1000, // Set the cutoff frequency (in Hz)
@@ -469,6 +474,7 @@ $(function() {
       case 5: // Low pass filter
         effects[i] = {
           name: 'Low pass filter',
+          skip: ['type'],
           fx: new Tone.Filter({
             type: "lowpass",
             frequency: 2000,   // Try 1000-3000 Hz
@@ -481,6 +487,7 @@ $(function() {
       case 6: // Vibrato
         effects[i] = {
           name: 'Vibrato',
+          skip: ['type'],
           fx: new Tone.Vibrato({
             frequency: 5,      // Speed of vibrato
             depth: 0.1,        // Amount of pitch variation
@@ -492,6 +499,7 @@ $(function() {
       case 7: // Reverb
         effects[i] = {
           name: 'Reverb',
+          skip: [],
           fx: new Tone.Reverb({
             decay: 2,          // Around 1.5-3 seconds works well
             wet: 0.4           // Keep subtle for lofi
@@ -502,6 +510,7 @@ $(function() {
       case 8: // Compressor
         effects[i] = {
           name: 'Compressor',
+          skip: [],
           fx: new Tone.Compressor({
             threshold: -24,    // Lower threshold catches more of the signal
             ratio: 4,          // Moderate compression ratio
@@ -514,6 +523,7 @@ $(function() {
       case 9: // Phaser
         effects[i] = {
           name: 'Phaser',
+          skip: ['baseFrequency'],
           fx: new Tone.Phaser({
             frequency: 0.5,    // Slow movement
             octaves: 3,        // Range of the effect
@@ -526,6 +536,7 @@ $(function() {
       case 10: // Chebyshev
         effects[i] = {
           name: 'Chebyshev',
+          skip: ['oversample'],
           fx: new Tone.Chebyshev({
             order: 4,          // Try 2-5 for subtle harmonics
             wet: 0.2
@@ -536,6 +547,7 @@ $(function() {
       case 11: // Limiter - To prevent clipping while maximizing volume??
         effects[i] = {
           name: 'Limiter',
+          skip: [],
           fx: new Tone.Limiter(-0.5).toDestination()
         };
 
@@ -543,6 +555,7 @@ $(function() {
       case 15:  // Mute
         effects[i] = {
           name: 'Mute',
+          skip: ['all'],
           fx: new Tone.Gain(0).toDestination()
         };
 
@@ -550,6 +563,7 @@ $(function() {
       default: // Distortion is default!?
         effects[i] = {
           name: 'Distortion again!?',
+          skip: [],
           fx: new Tone.Distortion({ distortion: 0.8, wet: 0.8 }).toDestination()
         };
 
@@ -898,14 +912,26 @@ $(function() {
 
         var effectParams = effectObj.fx.get();
         var effectParamsNames = Object.keys(effectParams);
+        var paramCount = 0;
 
-        effectParamsNames.forEach((effectParamName, i) => { // Enable param changing buttons
-          if (i > 4) { // Max 5 parameters we can have per effect
+        effectParamsNames.forEach((effectParamName) => { // Enable param changing buttons
+          if (effectObj.skip.includes('all')) { // If skip is all then we use no params for this effect!
             return;
           }
 
-          $(`#fp${i}`).removeAttr('disabled');
+          if (effectObj.skip.includes(effectParamName) || paramCount > 4) { // Parameter not allowed!/Max 5 parameters we can have per effect
+            return;
+          }
+
+          $(`#fp${paramCount}`).removeAttr('disabled');
+
+          paramCount++;
         });
+
+        if (paramCount) { // If there is at least one param for this effect, make the first one to be enabled!
+          $('#fp0').addClass('sampleLoaded playing');
+          $('#minus, #plus').removeAttr('disabled');
+        }
 
         $(`#f${slotId}`).addClass('sampleLoaded playing');
 
@@ -927,8 +953,8 @@ $(function() {
 
       mainModeAndParams.fx = undefined;
 
-      $(`#f${slotId}`).removeClass('sampleLoaded playing');
-      $('.fxParam').attr('disabled', true);
+      $(`#f${slotId}, .fxParam`).removeClass('sampleLoaded playing');
+      $('#minus, #plus, .fxParam').attr('disabled', true);
 
       pushToScreen(`Disabled ${effectName} on slot F` + decToHex(slotId));
 
