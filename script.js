@@ -6,6 +6,7 @@ var mainModeAndParams = { //TODO -> Comment
   mode: 'PLAY', // Modes can be PLAY, LOADINGSAMPLE, etc..
   initiator: undefined,
   fx: undefined, //TODO -> Comment and improve
+  fxParam: 0,
   unit: 0.1,
   recording: {
     state: 0,
@@ -93,7 +94,7 @@ function resetToPlayMode() {
 }
 
 function getSampleOrFxButtonId(target) {
-  return target.id.replace('s', '').replace('f', '');
+  return target.id.replace('s', '').replace('f', '').replace('p', '');
 };
 
 function loadSample(slotId) {
@@ -411,6 +412,10 @@ function playPauseRecording() {
   return;
 }
 
+function getFxParamNameBySlotId(slotId) {
+  return effects[mainModeAndParams.fx].params[slotId];
+}
+
 $(function() {
   for (var i = 0; i <= 15; i++) { // Create 16 players for each sample button!
     initSampleButton(i);
@@ -431,7 +436,7 @@ $(function() {
       case 1: // Feedback delay
         effects[i] = {
           name: 'Feedback delay',
-          params: ['wet', 'feedback', 'delayTime', 'maxDelay'],
+          params: ['wet', 'feedback', 'delayTime'],
           fx: new Tone.FeedbackDelay({ delayTime: 0.25, feedback: 0.2, wet: 0.8 }).toDestination()
         };
 
@@ -458,7 +463,7 @@ $(function() {
       case 4: // High pass filter
         effects[i] = {
           name: 'High pass filter',
-          params: ['Q', 'detune', 'frequency', 'gain', 'rolloff'],
+          params: ['Q', 'detune', 'frequency', 'gain'],
           fx: new Tone.Filter({
             type: "highpass",
             frequency: 1000, // Set the cutoff frequency (in Hz)
@@ -472,11 +477,11 @@ $(function() {
       case 5: // Low pass filter
         effects[i] = {
           name: 'Low pass filter',
-          params: ['Q', 'detune', 'frequency', 'gain', 'rolloff'],
+          params: ['Q', 'detune', 'frequency', 'gain'],
           fx: new Tone.Filter({
             type: "lowpass",
             frequency: 2000,   // Try 1000-3000 Hz
-            rolloff: -24,
+            rolloff: -24,//-12? More gentle
             Q: 1
           }).toDestination()
         };
@@ -485,7 +490,7 @@ $(function() {
       case 6: // Vibrato
         effects[i] = {
           name: 'Vibrato',
-          params: ['wet', 'maxDelay', 'frequency', 'depth'],
+          params: ['wet', 'frequency', 'depth'],
           fx: new Tone.Vibrato({
             frequency: 5,      // Speed of vibrato
             depth: 0.1,        // Amount of pitch variation
@@ -497,7 +502,7 @@ $(function() {
       case 7: // Reverb
         effects[i] = {
           name: 'Reverb',
-          params: ['wet', 'delay', 'preDelay'],
+          params: ['wet', 'decay', 'preDelay'],//TODO -> CAN PREDELAY BE CHANGED AFTER?
           fx: new Tone.Reverb({
             decay: 2,          // Around 1.5-3 seconds works well
             wet: 0.4           // Keep subtle for lofi
@@ -521,7 +526,7 @@ $(function() {
       case 9: // Phaser
         effects[i] = {
           name: 'Phaser',
-          params: ['wet', 'frequency', 'octaves', 'stages', 'Q'],
+          params: ['wet', 'frequency', 'octaves', 'Q'],
           fx: new Tone.Phaser({
             frequency: 0.5,    // Slow movement
             octaves: 3,        // Range of the effect
@@ -786,6 +791,42 @@ $(function() {
         return;
       }
 
+      if (mainModeAndParams.mode == 'FX') {
+        var paramName = getFxParamNameBySlotId(mainModeAndParams.fxParam);
+
+        var currentValue = effects[mainModeAndParams.fx].fx.get()[paramName];
+        var minEffectValue = effects[mainModeAndParams.fx].fx[paramName].minValue
+        var maxEffectValue = effects[mainModeAndParams.fx].fx[paramName].maxValue;
+
+        if (typeof minEffectValue == 'undefined') {
+          minEffectValue = 0;
+        }
+
+        if (typeof maxEffectValue == 'undefined') {
+          maxEffectValue = 1;
+        }
+
+        if (evt.target.id == 'minus') {
+          currentValue -= mainModeAndParams.unit;
+        } else { // Plus
+          currentValue += mainModeAndParams.unit;
+        }
+
+        if (currentValue < minEffectValue || currentValue > maxEffectValue) {
+          pushToScreen(`Param ${paramName} cannot exceed the range ${minEffectValue}:${maxEffectValue}`);
+
+          return;
+        }
+
+        effects[mainModeAndParams.fx].fx.set({ [paramName]: currentValue });
+
+        currentValue = currentValue.toFixed(2);
+
+        pushToScreen(`Param ${paramName} set to ${currentValue}!`);
+
+        return;
+      }
+
       if (mainModeAndParams.mode == 'PLAYBACKRATE') {
         if (!mainModeAndParams.initiator) {
           pushToScreen("Select a slot to change it's speed");
@@ -888,13 +929,29 @@ $(function() {
       return;
     }
 
-    if (!$(evt.target).hasClass('effectsSlot') && !$(evt.target).hasClass('sampleSlot')) {
+    if (!$(evt.target).hasClass('fxParam') && !$(evt.target).hasClass('effectsSlot') && !$(evt.target).hasClass('sampleSlot')) {
       pushToScreen('Not yet implemented..');
 
       return;
     }
 
     var slotId = getSampleOrFxButtonId(evt.target);
+
+    if ($(evt.target).hasClass('fxParam')) {
+      if (mainModeAndParams.fxParam == slotId) { // This slot allready selected
+        return;
+      }
+
+      $(`#fp${mainModeAndParams.fxParam}`).removeClass('sampleLoaded playing');
+
+      mainModeAndParams.fxParam = parseInt(slotId);
+
+      $(`#fp${mainModeAndParams.fxParam}`).addClass('sampleLoaded playing');
+
+      pushToScreen(`Param ${getFxParamNameBySlotId(slotId)} selected!`);
+
+      return;
+    }
 
     if ($(evt.target).hasClass('effectsSlot')) {
       var effectObj = effects[slotId];
@@ -914,14 +971,16 @@ $(function() {
           i++;
         });
 
-        if (effectObj.params.length) { // If there is at least one param for this effect, make the first one to be enabled!
-          $('#fp0').addClass('sampleLoaded playing');
-          $('#minus, #plus').removeAttr('disabled');
-        }
-
         $(`#f${slotId}`).addClass('sampleLoaded playing');
 
         pushToScreen(`Enabled ${effectName} on slot F` + decToHex(slotId));
+
+        if (effectObj.params.length) { // If there is at least one param for this effect, make the first one to be enabled!
+          mainModeAndParams.fxParam = 0; // Mark internally that the first parameter is in use!
+
+          $('#fp0').addClass('sampleLoaded playing');
+          $('#minus, #plus').removeAttr('disabled');
+        }
 
         return;
       }
