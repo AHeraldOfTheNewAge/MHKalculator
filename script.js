@@ -570,13 +570,15 @@ $(function() {
         };
 
         break;
-      case 10: // Chebyshev
+      case 10: // PitchShift
         effects[i] = {
-          name: 'Chebyshev',
-          params: ['wet', 'order'],
-          fx: new Tone.Chebyshev({
-            order: 4,          // Try 2-5 for subtle harmonics
-            wet: 0.2
+          name: 'PitchShift',
+          params: ['pitch', 'windowSize', 'delayTime', 'feedback'],
+          fx: new Tone.PitchShift({
+            pitch: 0,        // pitch shift in semitones (0 = no shift)
+            windowSize: 0.1, // size of the analysis window in seconds
+            delayTime: 0,    // additional delay time
+            feedback: 0      // amount of feedback
           }).toDestination()
         };
 
@@ -586,6 +588,14 @@ $(function() {
           name: 'Limiter',
           params: ['threshold'],
           fx: new Tone.Limiter(-0.5).toDestination()
+        };
+
+        break;
+      case 14:  // Mono
+        effects[i] = {
+          name: 'Mono',
+          params: [],
+          fx: new Tone.Mono().toDestination()
         };
 
         break;
@@ -831,6 +841,13 @@ $(function() {
         var currentValue = effects[mainModeAndParams.fx].fx.get()[paramName];
         var minEffectValue = effects[mainModeAndParams.fx].fx[paramName].minValue
         var maxEffectValue = effects[mainModeAndParams.fx].fx[paramName].maxValue;
+
+        console.log(minEffectValue, maxEffectValue, paramName, mainModeAndParams.fxParam);
+
+        if (mainModeAndParams.fx == 10 && mainModeAndParams.fxParam == 0) { // Pitchifter pitch param limits! // TODO -> Move this out of here!
+          minEffectValue = -48;
+          maxEffectValue = 48;
+        }
 
         if (typeof minEffectValue == 'undefined') {
           minEffectValue = 0;
