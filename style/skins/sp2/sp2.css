@@ -33,7 +33,7 @@ body.sp2 #buttons {
 body.sp2 #buttons button {
   font-family: "oldd", sans-serif;
   background-color: #b5ae76;
-  color: #000;
+  color: #751010;
   border-radius: 0.6rem;
 }
 body.sp2 #buttons button#chopB, body.sp2 #buttons button#chopE {
@@ -43,13 +43,13 @@ body.sp2 #buttons button#minus, body.sp2 #buttons button#plus {
   background-color: #c58d9a;
 }
 body.sp2 #buttons button#equal {
-  background-color: #833535;
+  background-color: #835353;
 }
 body.sp2 #buttons button.sampleSlot, body.sp2 #buttons button.effectsSlot {
   background-color: #8286a4;
 }
 body.sp2 #buttons button.sampleLoaded {
-  color: #fff;
+  color: #d2bebe;
 }
 body.sp2 #buttons button.loopMode {
   border: 2px dashed #fff;
