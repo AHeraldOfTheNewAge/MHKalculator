@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwa-cache-v36";
+const CACHE_NAME = "pwa-cache-v37";
 const urlsToCache = [
 	"/MHKalculator/",
 	"manifest.json",

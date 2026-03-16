@@ -544,20 +544,7 @@ $(function() {
         };
 
         break;
-      case 8: // Compressor
-        effects[i] = {
-          name: 'Compressor',
-          params: ['attack', 'knee', 'ratio', 'release', 'threshold'],
-          fx: new Tone.Compressor({
-            threshold: -24,    // Lower threshold catches more of the signal
-            ratio: 4,          // Moderate compression ratio
-            attack: 0.003,     // Fast attack to preserve transients
-            release: 0.25      // Medium release for natural decay
-          }).toDestination()
-        };
-
-        break;
-      case 9: // Phaser
+      case 8: // Phaser
         effects[i] = {
           name: 'Phaser',
           params: ['wet', 'frequency', 'octaves', 'Q'],
@@ -570,7 +557,7 @@ $(function() {
         };
 
         break;
-      case 10: // PitchShift
+      case 9: // PitchShift
         effects[i] = {
           name: 'PitchShift',
           params: ['pitch', 'windowSize', 'delayTime', 'feedback'],
@@ -583,15 +570,7 @@ $(function() {
         };
 
         break;
-      case 11: // Limiter - To prevent clipping while maximizing volume??
-        effects[i] = {
-          name: 'Limiter',
-          params: ['threshold'],
-          fx: new Tone.Limiter(-0.5).toDestination()
-        };
-
-        break;
-      case 14:  // Mono
+      case 10:  // Mono
         effects[i] = {
           name: 'Mono',
           params: [],
@@ -599,7 +578,7 @@ $(function() {
         };
 
         break;
-      case 15:  // Mute
+      case 11:  // Mute
         effects[i] = {
           name: 'Mute',
           params: [],

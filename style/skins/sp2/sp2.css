@@ -5,7 +5,7 @@
   font-style: normal;
 }
 body.sp2 {
-  background-color: #a1a1a1;
+  background-color: #3e3e3e;
   font-family: "oldd", sans-serif;
   color: #b76a6a;
 }
@@ -23,7 +23,7 @@ body.sp2 #console #screen {
   font-family: "oldd", sans-serif;
   color: #b76a6a;
   font-size: 1.4rem;
-  border-color: #a1a1a1;
+  border-color: #3e3e3e;
   background-color: #626262;
 }
 body.sp2 #buttons {
@@ -32,22 +32,21 @@ body.sp2 #buttons {
 }
 body.sp2 #buttons button {
   font-family: "oldd", sans-serif;
-  background-color: #b7af6a;
+  background-color: #b5ae76;
   color: #000;
-  border-radius: 0.8rem;
-  border-color: #000;
+  border-radius: 0.6rem;
 }
 body.sp2 #buttons button#chopB, body.sp2 #buttons button#chopE {
-  background-color: #6ab793;
+  background-color: #5f8a76;
 }
 body.sp2 #buttons button#minus, body.sp2 #buttons button#plus {
-  background-color: #b76a7c;
+  background-color: #c58d9a;
 }
 body.sp2 #buttons button#equal {
-  background-color: #b76a6a;
+  background-color: #833535;
 }
 body.sp2 #buttons button.sampleSlot, body.sp2 #buttons button.effectsSlot {
-  background-color: #6a72b7;
+  background-color: #8286a4;
 }
 body.sp2 #buttons button.sampleLoaded {
   color: #fff;
@@ -56,5 +55,5 @@ body.sp2 #buttons button.loopMode {
   border: 2px dashed #fff;
 }
 body.sp2 #buttons button:disabled {
-  background-color: #4c4948 !important;
+  background-color: #525558 !important;
 }/*# sourceMappingURL=sp2.css.map */
