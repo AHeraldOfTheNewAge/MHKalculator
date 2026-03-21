@@ -7,9 +7,10 @@ body.brutalist {
   color: #000;
 }
 body.brutalist #appTitle {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 700;
   padding: 5px;
+  background-color: #F9F9F9;
 }
 body.brutalist #console #screen {
   font-family: "Space Grotesk", sans-serif;
@@ -42,15 +43,25 @@ body.brutalist #buttons button {
 }
 body.brutalist #buttons button:not(.sampleSlot, #equal) {
   color: #7E0100;
+  background-color: #e2e2e2;
 }
 body.brutalist #buttons button.sampleLoaded {
-  background-color: #DBDB00;
+  background-color: #DBDB00 !important;
 }
-body.brutalist #buttons button#equal {
+body.brutalist #buttons button#changeConst, body.brutalist #buttons button#minus, body.brutalist #buttons button#plus {
+  background-color: #3778e3;
+  color: #F9F9F9;
+}
+body.brutalist #buttons button#rec, body.brutalist #buttons button#equal {
   background-color: #7E0100;
+  color: #F9F9F9;
 }
 body.brutalist #buttons button.loopMode {
   border: 2px dashed #000;
+}
+body.brutalist #buttons button:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
 }
 body.brutalist #buttons button:disabled {
   background-color: #000 !important;

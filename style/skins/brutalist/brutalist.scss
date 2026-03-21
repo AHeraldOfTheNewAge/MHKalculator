@@ -6,6 +6,8 @@ $BACKGROUND_COLOR: #fff;
 $YELLOW_COLOR: #DBDB00;
 $RED_COLOR: #7E0100;
 $KIND_OF_WHITE_COLOR: #F9F9F9;
+$KIND_OF_WHITE_COLOR_2: #e2e2e2;
+$BLUE_COLOR: #3778e3;
 $BUTTON_COLOR_DISABLED: #000;
 
 body.brutalist {
@@ -16,9 +18,10 @@ body.brutalist {
 	color: $MAIN_COLOR_BODY_SCREEN;
 
 	#appTitle {
-		font-size: 1.6rem;
+		font-size: 1.4rem;
 		font-weight: 700;
 		padding: 5px;
+		background-color: $KIND_OF_WHITE_COLOR;
 	}
 	
 	#console {
@@ -61,33 +64,33 @@ body.brutalist {
 
 			&:not(.sampleSlot, #equal) {
 				color: $RED_COLOR;
+				background-color: $KIND_OF_WHITE_COLOR_2;
 			}
 
 			&.sampleLoaded {
-				background-color: $YELLOW_COLOR;
+				background-color: $YELLOW_COLOR !important;
 			}
 
-			&#chopB,
-			&#chopE {
-			}
-
+			&#changeConst,
 			&#minus,
 			&#plus {
+				background-color: $BLUE_COLOR;
+				color: $KIND_OF_WHITE_COLOR;
 			}
 
+			&#rec,
 			&#equal {
 				background-color: $RED_COLOR;
-			}
-
-			&.sampleSlot,
-			&.effectsSlot {
-			}
-
-			&.sampleLoaded {
+				color: $KIND_OF_WHITE_COLOR;
 			}
 
 			&.loopMode {
 				border: 2px dashed $MAIN_COLOR_BODY_SCREEN;
+			}
+
+			&:active {
+				box-shadow: none;
+				transform: translate(2px, 2px); // moves into the shadow's place
 			}
 
 			&:disabled {
