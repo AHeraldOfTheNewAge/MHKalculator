@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap');
+
+$MAIN_COLOR_BODY_SCREEN: #000;
+$SHADOW: 4px 4px 0px 0px;
+$BACKGROUND_COLOR: #fff;
+$YELLOW_COLOR: #DBDB00;
+$RED_COLOR: #7E0100;
+$KIND_OF_WHITE_COLOR: #F9F9F9;
+$BUTTON_COLOR_DISABLED: #000;
+
+body.brutalist {
+	background-color: $BACKGROUND_COLOR;
+	background-image: radial-gradient(circle, #777777 1px, transparent 1px);
+	background-size: 20px 20px;
+	font-family: 'Space Grotesk', sans-serif;
+	color: $MAIN_COLOR_BODY_SCREEN;
+
+	#appTitle {
+		font-size: 1.6rem;
+		font-weight: 700;
+		padding: 5px;
+	}
+	
+	#console {
+		#screen {
+			font-family: 'Space Grotesk', sans-serif;
+			color: $MAIN_COLOR_BODY_SCREEN;
+			
+			font-size: .8rem;
+			font-weight: 700;
+
+			background-color: $YELLOW_COLOR;
+
+			border-width: 2px;
+			border-color: $MAIN_COLOR_BODY_SCREEN;
+			box-shadow: $SHADOW $MAIN_COLOR_BODY_SCREEN;
+		}
+
+		#consoleInfo {
+			#consoleMode,
+			#help {
+				color: $MAIN_COLOR_BODY_SCREEN;
+				font-weight: bold;
+			}
+		}
+	}
+
+	#buttons {
+		gap: 10px;
+		padding: 10px;
+	
+		button {
+			font-family: 'Space Grotesk', sans-serif;
+			font-size: 1.2rem;
+			font-weight: 700;
+			background-color: $KIND_OF_WHITE_COLOR;
+			color: $MAIN_COLOR_BODY_SCREEN;
+			border-width: 2px;
+			border-color: $MAIN_COLOR_BODY_SCREEN;
+			box-shadow: $SHADOW $MAIN_COLOR_BODY_SCREEN;
+
+			&:not(.sampleSlot, #equal) {
+				color: $RED_COLOR;
+			}
+
+			&.sampleLoaded {
+				background-color: $YELLOW_COLOR;
+			}
+
+			&#chopB,
+			&#chopE {
+			}
+
+			&#minus,
+			&#plus {
+			}
+
+			&#equal {
+				background-color: $RED_COLOR;
+			}
+
+			&.sampleSlot,
+			&.effectsSlot {
+			}
+
+			&.sampleLoaded {
+			}
+
+			&.loopMode {
+				border: 2px dashed $MAIN_COLOR_BODY_SCREEN;
+			}
+
+			&:disabled {
+				background-color: $BUTTON_COLOR_DISABLED !important;
+				color: $KIND_OF_WHITE_COLOR !important;
+			}
+		}
+	}
+}

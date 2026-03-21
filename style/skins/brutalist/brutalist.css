@@ -1,0 +1,58 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap");
+body.brutalist {
+  background-color: #fff;
+  background-image: radial-gradient(circle, #777777 1px, transparent 1px);
+  background-size: 20px 20px;
+  font-family: "Space Grotesk", sans-serif;
+  color: #000;
+}
+body.brutalist #appTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  padding: 5px;
+}
+body.brutalist #console #screen {
+  font-family: "Space Grotesk", sans-serif;
+  color: #000;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background-color: #DBDB00;
+  border-width: 2px;
+  border-color: #000;
+  box-shadow: 4px 4px 0px 0px #000;
+}
+body.brutalist #console #consoleInfo #consoleMode,
+body.brutalist #console #consoleInfo #help {
+  color: #000;
+  font-weight: bold;
+}
+body.brutalist #buttons {
+  gap: 10px;
+  padding: 10px;
+}
+body.brutalist #buttons button {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  background-color: #F9F9F9;
+  color: #000;
+  border-width: 2px;
+  border-color: #000;
+  box-shadow: 4px 4px 0px 0px #000;
+}
+body.brutalist #buttons button:not(.sampleSlot, #equal) {
+  color: #7E0100;
+}
+body.brutalist #buttons button.sampleLoaded {
+  background-color: #DBDB00;
+}
+body.brutalist #buttons button#equal {
+  background-color: #7E0100;
+}
+body.brutalist #buttons button.loopMode {
+  border: 2px dashed #000;
+}
+body.brutalist #buttons button:disabled {
+  background-color: #000 !important;
+  color: #F9F9F9 !important;
+}/*# sourceMappingURL=brutalist.css.map */

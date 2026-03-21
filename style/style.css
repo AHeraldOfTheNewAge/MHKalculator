@@ -13,17 +13,20 @@ body #appTitle {
 body #console {
   grid-area: console;
   display: grid;
-  grid-template-rows: 7fr 1fr;
+  grid-template-rows: 8fr 2fr;
 }
 body #console #screen {
   grid-row: 1;
   resize: none;
-  border: 10px solid lightgrey;
+  width: 90%;
+  margin: 0 auto;
+  border: 1px solid lightgrey;
 }
 body #console #consoleInfo {
   grid-row: 2;
   display: flex;
   justify-content: space-around;
+  padding-top: 15px;
 }
 body #console #consoleInfo #consoleMode {
   width: 10rem;
