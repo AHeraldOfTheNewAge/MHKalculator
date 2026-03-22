@@ -11,7 +11,7 @@ body #appTitle {
   padding: 10px;
 }
 body #appTitle img {
-  height: 1.2rem;
+  height: 1.5rem;
 }
 body #console {
   grid-area: console;
