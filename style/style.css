@@ -10,6 +10,9 @@ body #appTitle {
   grid-area: appTitle;
   padding: 10px;
 }
+body #appTitle img {
+  height: 1.2rem;
+}
 body #console {
   grid-area: console;
   display: grid;
