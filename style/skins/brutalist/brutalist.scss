@@ -62,6 +62,20 @@ body.brutalist {
 			border-color: $MAIN_COLOR_BODY_SCREEN;
 			box-shadow: $SHADOW $MAIN_COLOR_BODY_SCREEN;
 
+			&#rec,
+			&#chopB,
+			&#chopE,
+			&#changeConst,
+			&#fx,
+			&.page1Button,
+			&.fxParam,
+			&#minus,
+			&#plus {
+				height: 80%;
+				width: 90%;
+				margin: 0 auto;
+			}
+
 			&:not(.sampleSlot, #equal) {
 				color: $RED_COLOR;
 				background-color: $KIND_OF_WHITE_COLOR_2;

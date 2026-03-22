@@ -41,6 +41,11 @@ body.brutalist #buttons button {
   border-color: #000;
   box-shadow: 4px 4px 0px 0px #000;
 }
+body.brutalist #buttons button#rec, body.brutalist #buttons button#chopB, body.brutalist #buttons button#chopE, body.brutalist #buttons button#changeConst, body.brutalist #buttons button#fx, body.brutalist #buttons button.page1Button, body.brutalist #buttons button.fxParam, body.brutalist #buttons button#minus, body.brutalist #buttons button#plus {
+  height: 80%;
+  width: 90%;
+  margin: 0 auto;
+}
 body.brutalist #buttons button:not(.sampleSlot, #equal) {
   color: #7E0100;
   background-color: #e2e2e2;
