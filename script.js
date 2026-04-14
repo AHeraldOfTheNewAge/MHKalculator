@@ -202,6 +202,7 @@ function initSampleButton(slotId) {
     player: new Tone.Player().toDestination(), // Create a Tone.Player instance
     fileName: '????',
     playMode: 'NORMAL', // PlayModes are NORMAL, LOOP, REVERSE, REVERSELOOP, we cycle trough them!
+    nonstop: false,
     link: undefined, // If linked, playing this sample will trigger the linked sample as well(also stopping)
     chops: {
       begin: undefined,
@@ -768,6 +769,26 @@ $(function() {
       return;
     }
 
+    if (evt.target.id == 'nonstop') {
+      console.log(evt, 'evt?');
+
+      if (mainModeAndParams.mode == 'PLAY') {
+        pushToScreen("Change a sample to nonstop mode!");
+        changeMainMode('NONSTOP');
+
+        $('#nonstop').addClass('active');
+
+        disableButtonsBySituation('nonstop');
+
+        return;
+      }
+
+      pushToScreen('Cancelled sample nonstop change');
+      resetToPlayMode();
+
+      return;
+    }
+
     if (evt.target.id == 'chopB') {
       if (mainModeAndParams.mode == 'PLAY') {
         pushToScreen("Chop sample from the begining!");
@@ -1050,7 +1071,9 @@ $(function() {
         return;
       }
 
-      if (sampleSlot.player.state == 'started') { // Sample is playing, stop it!
+      console.log(sampleSlot.nonstop, 'nonstop?');
+
+      if (sampleSlot.player.state == 'started' && !sampleSlot.nonstop) { // Sample is playing, stop it!
         stopSample(slotId);
 
         return;
@@ -1242,6 +1265,29 @@ $(function() {
 
           break;
       }
+
+      return;
+    }
+
+    if (mainModeAndParams.mode == 'NONSTOP') {
+      console.log('nonstop?');
+
+      if (sampleSlot.nonstop) {
+        sampleSlot.nonstop = false;
+
+        $(`#s${slotId}`).removeClass('nonstopMode');
+
+        pushToScreen('Changed slot ' + decToHex(slotId) + ' to start-stop play mode!');
+
+        return;
+      }
+
+      sampleSlot.nonstop = true;
+
+      $(`#s${slotId}`).addClass('nonstopMode');
+
+      pushToScreen('Changed slot ' + decToHex(slotId) + ' to nonstop play mode!');
+      console.log(sampleSlot.nonstop);
 
       return;
     }

@@ -102,6 +102,10 @@ body.brutalist {
 				border: 2px dashed $MAIN_COLOR_BODY_SCREEN;
 			}
 
+			&.nonstopMode::before {
+				color: $RED_COLOR;
+			}
+
 			&:active {
 				box-shadow: none;
 				transform: translate(2px, 2px); // moves into the shadow's place

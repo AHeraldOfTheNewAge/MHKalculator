@@ -71,6 +71,12 @@ body #buttons button.loopMode {
 body #buttons button.reverseMode {
   rotate: 180deg;
 }
+body #buttons button.nonstopMode::before {
+  content: "*";
+  font-size: 10px;
+  position: absolute;
+  font-size: 20px;
+}
 body #buttons button.hideButton {
   display: none;
 }

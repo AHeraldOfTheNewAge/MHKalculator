@@ -89,6 +89,13 @@ body {
 			  rotate: 180deg;
 			}
 
+			&.nonstopMode::before {
+				content: '*';
+				font-size: 10px;
+				position:absolute;
+				font-size: 20px;
+			}
+
 			&.hideButton {
 				display: none;
 			}

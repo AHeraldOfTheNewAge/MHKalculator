@@ -64,6 +64,9 @@ body.brutalist #buttons button#rec, body.brutalist #buttons button#equal {
 body.brutalist #buttons button.loopMode {
   border: 2px dashed #000;
 }
+body.brutalist #buttons button.nonstopMode::before {
+  color: #7E0100;
+}
 body.brutalist #buttons button:active {
   box-shadow: none;
   transform: translate(2px, 2px);
