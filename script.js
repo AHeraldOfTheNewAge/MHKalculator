@@ -3,11 +3,23 @@ function enterFullscreen() {
 
   if (element.requestFullscreen) {
     element.requestFullscreen();
-  } else if (element.webkitRequestFullscreen) { // Safari
+
+    return;
+  }
+  
+  if (element.webkitRequestFullscreen) { // Safari
     element.webkitRequestFullscreen();
-  } else if (element.mozRequestFullScreen) { // Firefox
+
+    return;
+  }
+  
+  if (element.mozRequestFullScreen) { // Firefox
     element.mozRequestFullScreen();
-  } else if (element.msRequestFullscreen) { // IE/Edge
+
+    return;
+  }
+  
+  if (element.msRequestFullscreen) { // IE/Edge
     element.msRequestFullscreen();
   }
 }
