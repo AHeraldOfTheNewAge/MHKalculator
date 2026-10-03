@@ -15,13 +15,27 @@ function enterFullscreen() {
 function exitFullscreen() {
   if (document.exitFullscreen) {
     document.exitFullscreen();
-  } else if (document.webkitExitFullscreen) {
+
+    return;
+  }
+  
+  if (document.webkitExitFullscreen) {
     document.webkitExitFullscreen();
-  } else if (document.mozCancelFullScreen) {
+
+    return;
+  }
+  
+  if (document.mozCancelFullScreen) {
     document.mozCancelFullScreen();
-  } else if (document.msExitFullscreen) {
+
+    return;
+  }
+  
+  if (document.msExitFullscreen) {
     document.msExitFullscreen();
   }
+
+  // Whatever..
 }
 
 function toggleFullscreen() {
